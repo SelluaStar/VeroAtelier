@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import './Auth.css';
 
 function SignUp() {
@@ -11,7 +11,6 @@ function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,23 +19,40 @@ function SignUp() {
     setLoading(true);
 
     try {
-      const { data, error: signUpError } = await signUp(email, password, fullName);
+      // Check if user already exists
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', email)
+        .single();
 
-      if (signUpError) throw signUpError;
-
-      // Check if email confirmation is required
-      if (data?.user && !data.session) {
-        setError('Please check your email to confirm your account before signing in.');
+      if (existingUser) {
+        setError('An account with this email already exists.');
         setLoading(false);
         return;
       }
 
-      // If we have a session, proceed to onboarding
-      if (data?.session) {
-        navigate('/onboarding');
-      }
+      // Generate 5-digit verification code
+      const verificationCode = Math.floor(10000 + Math.random() * 90000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
+
+      // Store verification code in database
+      const { error: insertError } = await supabase
+        .from('verification_codes')
+        .insert({
+          email,
+          code: verificationCode,
+          expires_at: expiresAt
+        });
+
+      if (insertError) throw insertError;
+
+      // Navigate to verification page
+      navigate('/verify-email', {
+        state: { email, password, fullName }
+      });
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }

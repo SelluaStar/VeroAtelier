@@ -10,6 +10,7 @@ import Cart from './pages/Cart';
 import Account from './pages/Account';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import VerifyEmail from './pages/VerifyEmail';
 import Onboarding from './pages/Onboarding';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
@@ -18,7 +19,7 @@ import './App.css';
 
 function AppContent() {
   const location = useLocation();
-  const isAuthPage = ['/signin', '/signup', '/onboarding'].includes(location.pathname);
+  const isAuthPage = ['/signin', '/signup', '/verify-email', '/onboarding'].includes(location.pathname);
 
   return (
     <div className="app">
@@ -35,6 +36,7 @@ function AppContent() {
             <Route path="/account" element={<Account />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/onboarding" element={<Onboarding />} />
           </Routes>
         </PageTransition>
