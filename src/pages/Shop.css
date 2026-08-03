@@ -34,37 +34,196 @@
   margin: 0;
 }
 
-/* Gender Toggle */
+/* Gender Toggle - replaced by category-tabs below, kept for compat */
 .gender-toggle {
   display: flex;
   gap: 0.5rem;
-  background: #F5F5F5;
-  padding: 0.25rem;
-  border-radius: 50px;
-  width: fit-content;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .gender-btn {
-  padding: 0.75rem 2rem;
+  padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background: transparent;
   color: #666;
-  border: none;
-  border-radius: 50px;
+  border: 1px solid rgba(0,0,0,0.12);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .gender-btn.active {
   background: #000;
   color: white;
+  border-color: #000;
 }
 
 .gender-btn:hover:not(.active) {
   color: #000;
+  border-color: rgba(0,0,0,0.3);
+}
+
+/* Category Tabs */
+.category-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+}
+
+.category-tab-group {
+  position: relative;
+}
+
+.category-tab {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.category-tab.active {
+  background: #000;
+  color: white;
+  border-color: #000;
+}
+
+.category-tab:hover:not(.active) {
+  color: #000;
+  border-color: rgba(0,0,0,0.3);
+}
+
+/* The clickable label part of a category tab */
+.category-tab-label {
+  padding: 0.625rem 1.25rem;
+  cursor: pointer;
+}
+
+/* The chevron expand button inside a category tab */
+.subcategory-expand {
+  padding: 0.625rem 0.625rem;
+  background: none;
+  border: none;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: inherit;
+  transition: background 0.15s;
+}
+
+.category-tab:not(.active) .subcategory-expand {
+  border-left-color: rgba(0,0,0,0.1);
+}
+
+.subcategory-expand:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.subcategory-expand svg {
+  transition: transform 0.2s;
+}
+
+.subcategory-expand.open svg {
+  transform: rotate(180deg);
+}
+
+/* Subcategory dropdown panel */
+.subcategory-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 200;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+}
+
+.subcategory-item {
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #444;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-transform: capitalize;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.subcategory-item:last-child {
+  border-bottom: none;
+}
+
+.subcategory-item:hover {
+  background: rgba(0,0,0,0.03);
+  color: #000;
+}
+
+.subcategory-item.active {
+  background: #000;
+  color: white;
+}
+
+/* Filter menu items (no checkboxes) */
+.filter-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #444;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.filter-menu-item:last-child {
+  border-bottom: none;
+}
+
+.filter-menu-item:hover {
+  background: rgba(0,0,0,0.03);
+  color: #000;
+}
+
+.filter-menu-item.selected {
+  color: #000;
+  font-weight: 700;
+}
+
+.filter-check {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #000;
+}
+
+.active-filter {
+  background: #000 !important;
+  color: white !important;
+  border-color: #000 !important;
 }
 
 /* Filters Bar */
