@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import {
-  Package,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  ShoppingCart,
-  AlertCircle,
-  Tag,
-  Settings,
-  BarChart3
+  Package, DollarSign, TrendingUp, TrendingDown,
+  ShoppingCart, AlertCircle, Tag, Settings, BarChart3
 } from 'lucide-react';
+import LoadingCard from '../../components/LoadingCard';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -118,7 +112,15 @@ function Dashboard() {
   if (loading) {
     return (
       <div className="admin-dashboard">
-        <div className="dashboard-loading">Loading dashboard...</div>
+        <div className="dashboard-header">
+          <h1>Dashboard</h1>
+        </div>
+        <div className="stats-grid">
+          <LoadingCard />
+          <LoadingCard />
+          <LoadingCard />
+          <LoadingCard />
+        </div>
       </div>
     );
   }

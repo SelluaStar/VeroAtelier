@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Plus, Edit, Trash2, Tag, Calendar } from 'lucide-react';
+import LoadingCard from '../../components/LoadingCard';
 import './Coupons.css';
 
 function Coupons() {
@@ -163,7 +164,11 @@ function Coupons() {
 
       <div className="coupons-grid">
         {loading ? (
-          <div className="loading-state">Loading coupons...</div>
+          <>
+            <LoadingCard />
+            <LoadingCard />
+            <LoadingCard />
+          </>
         ) : coupons.length === 0 ? (
           <div className="empty-state">
             <Tag size={48} />

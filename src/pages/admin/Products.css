@@ -152,6 +152,100 @@
   border-color: #000 !important;
 }
 
+/* Category Select */
+.category-select-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.category-select-wrapper select {
+  flex: 1;
+}
+
+.add-category-btn {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: #000;
+  color: white;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-category-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* Small Modal for Category */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content-small {
+  background: white;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.modal-header {
+  padding: 1.75rem 2rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.02em;
+}
+
+.modal-close {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #000;
+  color: white;
+  border-color: #000;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-actions {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 0.875rem;
+  justify-content: flex-end;
+}
+
 .products-toolbar {
   margin-bottom: 2rem;
 }

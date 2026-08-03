@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Plus, Edit, Trash2, Star, Search, Upload, X, GripVertical, Image as ImageIcon, Info } from 'lucide-react';
+import LoadingCard from '../../components/LoadingCard';
 import './Products.css';
 
 // Tooltip component
 function Tooltip({ text, children }) {
   const [visible, setVisible] = useState(false);
   return (
-    <span
-      className="tooltip-wrapper"
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-    >
+    <span className="tooltip-wrapper" onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
       {children}
       {visible && <span className="tooltip-bubble">{text}</span>}
     </span>
@@ -41,104 +38,50 @@ function CustomCheckbox({ checked, onChange, label, description }) {
 
 const DEMO_PRODUCTS = [
   {
-    name: 'Monogram Canvas Tote',
-    brand: 'Louis Vuitton',
+    name: 'Monogram Canvas Tote', brand: 'Louis Vuitton',
     description: 'Classic LV monogram canvas tote in excellent condition. Gold-tone hardware, leather trim, and tan interior lining. A timeless investment piece.',
-    price: 1250,
-    original_price: 2100,
-    category: 'bags',
-    subcategory: 'totes',
-    size: 'One Size',
-    condition: 'excellent',
-    stock: 1,
-    featured: true,
-    is_on_sale: true,
-    discount_percentage: 40,
+    price: 1250, original_price: 2100, category: 'bags', subcategory: 'totes',
+    size: 'One Size', condition: 'excellent', stock: 1, featured: true, is_on_sale: true, discount_percentage: 40,
     images: ['https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop'],
     image_url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop'
   },
   {
-    name: 'GG Marmont Belt Bag',
-    brand: 'Gucci',
+    name: 'GG Marmont Belt Bag', brand: 'Gucci',
     description: 'Matelassé chevron leather belt bag with a distinctive GG buckle. Worn twice, in pristine condition. Adjustable belt included.',
-    price: 780,
-    original_price: 1350,
-    category: 'bags',
-    subcategory: 'belt bags',
-    size: 'One Size',
-    condition: 'like-new',
-    stock: 1,
-    featured: true,
-    is_on_sale: true,
-    discount_percentage: 42,
+    price: 780, original_price: 1350, category: 'bags', subcategory: 'belt bags',
+    size: 'One Size', condition: 'like-new', stock: 1, featured: true, is_on_sale: true, discount_percentage: 42,
     images: ['https://images.unsplash.com/photo-1591480158595-c1a41a2e851f?w=800&auto=format&fit=crop'],
     image_url: 'https://images.unsplash.com/photo-1591480158595-c1a41a2e851f?w=800&auto=format&fit=crop'
   },
   {
-    name: 'Silk Crepe Blouse',
-    brand: 'Saint Laurent',
+    name: 'Silk Crepe Blouse', brand: 'Saint Laurent',
     description: 'Ivory silk crepe blouse with a relaxed fit and subtle sheen. Features a V-neckline, long sleeves, and tonal buttons. Dry cleaned and ready to wear.',
-    price: 420,
-    original_price: 890,
-    category: 'women',
-    subcategory: 'tops',
-    size: 'S, M',
-    condition: 'like-new',
-    stock: 2,
-    featured: false,
-    is_on_sale: true,
-    discount_percentage: 53,
+    price: 420, original_price: 890, category: 'shirts', subcategory: 'tops',
+    size: 'S, M', condition: 'like-new', stock: 2, featured: false, is_on_sale: true, discount_percentage: 53,
     images: ['https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=800&auto=format&fit=crop'],
     image_url: 'https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?w=800&auto=format&fit=crop'
   },
   {
-    name: 'Wool Overcoat',
-    brand: 'Loro Piana',
+    name: 'Wool Overcoat', brand: 'Loro Piana',
     description: 'Camel pure wool double-faced overcoat. Single-breasted silhouette with a belted back. Barely worn — ideal for autumn and winter layering.',
-    price: 2200,
-    original_price: 4500,
-    category: 'women',
-    subcategory: 'coats',
-    size: 'S, M, L',
-    condition: 'excellent',
-    stock: 1,
-    featured: true,
-    is_on_sale: false,
-    discount_percentage: null,
+    price: 2200, original_price: 4500, category: 'hoodies', subcategory: 'coats',
+    size: 'S, M, L', condition: 'excellent', stock: 1, featured: true, is_on_sale: false, discount_percentage: null,
     images: ['https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&auto=format&fit=crop'],
     image_url: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&auto=format&fit=crop'
   },
   {
-    name: 'Classic Biker Jacket',
-    brand: 'Balenciaga',
+    name: 'Classic Biker Jacket', brand: 'Balenciaga',
     description: 'Black lamb leather biker jacket with asymmetric zip and notched collar. Silver-tone hardware. A wardrobe staple in like-new condition.',
-    price: 1650,
-    original_price: 3200,
-    category: 'men',
-    subcategory: 'jackets',
-    size: 'M, L',
-    condition: 'like-new',
-    stock: 1,
-    featured: true,
-    is_on_sale: true,
-    discount_percentage: 48,
+    price: 1650, original_price: 3200, category: 'hoodies', subcategory: 'jackets',
+    size: 'M, L', condition: 'like-new', stock: 1, featured: true, is_on_sale: true, discount_percentage: 48,
     images: ['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop'],
     image_url: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop'
   },
   {
-    name: 'Leather Derby Shoes',
-    brand: 'Church\'s',
+    name: 'Leather Derby Shoes', brand: 'Church\'s',
     description: 'Polished black calf leather Derby shoes with a Goodyear welt sole. Classic broguing detail. Barely worn — size EU 43.',
-    price: 340,
-    original_price: 680,
-    category: 'shoes',
-    subcategory: 'derby',
-    size: '42, 43, 44',
-    condition: 'excellent',
-    stock: 1,
-    featured: false,
-    is_on_sale: true,
-    discount_percentage: 50,
+    price: 340, original_price: 680, category: 'shoes', subcategory: 'derby',
+    size: '42, 43, 44', condition: 'excellent', stock: 1, featured: false, is_on_sale: true, discount_percentage: 50,
     images: ['https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=800&auto=format&fit=crop'],
     image_url: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=800&auto=format&fit=crop'
   }
@@ -146,9 +89,14 @@ const DEMO_PRODUCTS = [
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [addingCategory, setAddingCategory] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [seedingDemo, setSeedingDemo] = useState(false);
@@ -159,7 +107,7 @@ function Products() {
   });
   const [draggedImageIndex, setDraggedImageIndex] = useState(null);
 
-  useEffect(() => { loadProducts(); }, []);
+  useEffect(() => { loadProducts(); loadCategories(); }, []);
 
   const loadProducts = async () => {
     try {
@@ -170,6 +118,37 @@ function Products() {
       console.error('Error loading products:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    setCategoriesLoading(true);
+    try {
+      const { data, error } = await supabase.from('categories').select('*').order('name', { ascending: true });
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
+  const addCategory = async () => {
+    if (!newCategoryName.trim()) return;
+    setAddingCategory(true);
+    try {
+      const slug = newCategoryName.toLowerCase().replace(/\s+/g, '-');
+      const { error } = await supabase.from('categories').insert([{ name: newCategoryName.trim(), slug }]);
+      if (error) throw error;
+      setNewCategoryName('');
+      setShowCategoryModal(false);
+      loadCategories();
+    } catch (error) {
+      console.error('Error adding category:', error);
+      alert('Error: ' + error.message);
+    } finally {
+      setAddingCategory(false);
     }
   };
 
@@ -338,7 +317,12 @@ function Products() {
 
       <div className="products-grid">
         {loading ? (
-          <div className="loading-state">Loading products...</div>
+          <>
+            <LoadingCard />
+            <LoadingCard />
+            <LoadingCard />
+            <LoadingCard />
+          </>
         ) : filteredProducts.length === 0 ? (
           <div className="empty-state">
             <ImageIcon size={48} />
@@ -356,9 +340,7 @@ function Products() {
                 ) : (
                   <div className="product-image-placeholder"><ImageIcon size={32} /></div>
                 )}
-                {product.featured && (
-                  <div className="featured-badge"><Star size={12} /> Featured</div>
-                )}
+                {product.featured && <div className="featured-badge"><Star size={12} /> Featured</div>}
                 {product.is_on_sale && <div className="sale-badge">Sale</div>}
               </div>
               <div className="product-info">
@@ -371,9 +353,7 @@ function Products() {
                   )}
                 </div>
                 <div className="product-meta">
-                  <span className={`stock-indicator ${product.stock < 5 ? 'low' : ''}`}>
-                    {product.stock} in stock
-                  </span>
+                  <span className={`stock-indicator ${product.stock < 5 ? 'low' : ''}`}>{product.stock} in stock</span>
                   <span className="product-category">{product.category}</span>
                 </div>
               </div>
@@ -384,14 +364,10 @@ function Products() {
                   </button>
                 </Tooltip>
                 <Tooltip text="Edit this product">
-                  <button className="action-btn" onClick={() => handleEdit(product)}>
-                    <Edit size={16} />
-                  </button>
+                  <button className="action-btn" onClick={() => handleEdit(product)}><Edit size={16} /></button>
                 </Tooltip>
                 <Tooltip text="Permanently delete this product">
-                  <button className="action-btn danger" onClick={() => handleDelete(product.id)}>
-                    <Trash2 size={16} />
-                  </button>
+                  <button className="action-btn danger" onClick={() => handleDelete(product.id)}><Trash2 size={16} /></button>
                 </Tooltip>
               </div>
             </div>
@@ -405,13 +381,10 @@ function Products() {
           <div className="modal-content-large" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-large">
               <h2>{editingProduct ? 'Edit Product' : 'New Product'}</h2>
-              <button className="modal-close-large" onClick={() => setShowModal(false)}>
-                <X size={20} />
-              </button>
+              <button className="modal-close-large" onClick={() => setShowModal(false)}><X size={20} /></button>
             </div>
 
             <form onSubmit={handleSubmit} className="product-form-large">
-
               {/* Images */}
               <div className="form-section">
                 <div className="section-title-row">
@@ -423,16 +396,10 @@ function Products() {
                 <div className="images-upload-area">
                   <div className="images-grid">
                     {formData.images.map((url, index) => (
-                      <div key={index} className="image-preview" draggable
-                        onDragStart={() => handleDragStart(index)}
-                        onDragOver={handleDragOver}
-                        onDrop={() => handleDrop(index)}
-                      >
+                      <div key={index} className="image-preview" draggable onDragStart={() => handleDragStart(index)} onDragOver={handleDragOver} onDrop={() => handleDrop(index)}>
                         <img src={url} alt={`Product ${index + 1}`} />
                         <div className="image-overlay">
-                          <button type="button" className="image-remove" onClick={() => removeImage(index)}>
-                            <X size={14} />
-                          </button>
+                          <button type="button" className="image-remove" onClick={() => removeImage(index)}><X size={14} /></button>
                           <div className="image-drag-handle"><GripVertical size={14} /></div>
                         </div>
                         {index === 0 && <div className="primary-badge">Primary</div>}
@@ -453,21 +420,11 @@ function Products() {
                 <h3 className="section-title">Basic Information</h3>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label>
-                      Product Name *
-                      <Tooltip text="The full name shown on the product page and in search results">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Product Name * <Tooltip text="The full name shown on the product page and in search results"><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="text" required placeholder="e.g. Monogram Canvas Tote" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Brand
-                      <Tooltip text="The designer or brand name. Shown as a badge on the product page.">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Brand <Tooltip text="The designer or brand name. Shown as a badge on the product page."><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="text" placeholder="e.g. Louis Vuitton" value={formData.brand} onChange={(e) => setFormData({ ...formData, brand: e.target.value })} />
                   </div>
                 </div>
@@ -482,30 +439,15 @@ function Products() {
                 <h3 className="section-title">Pricing & Inventory</h3>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label>
-                      Sale Price *
-                      <Tooltip text="The price customers pay. Set lower than Original Price to show savings.">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Sale Price * <Tooltip text="The price customers pay. Set lower than Original Price to show savings."><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="number" step="0.01" required placeholder="0.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Original / Retail Price
-                      <Tooltip text="The original retail price. Used to calculate and display the discount amount.">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Original / Retail Price <Tooltip text="The original retail price. Used to calculate and display the discount amount."><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="number" step="0.01" placeholder="0.00" value={formData.original_price} onChange={(e) => setFormData({ ...formData, original_price: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Stock Quantity *
-                      <Tooltip text="Number of units available. Items with fewer than 5 are flagged as low stock.">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Stock Quantity * <Tooltip text="Number of units available. Items with fewer than 5 are flagged as low stock."><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="number" required placeholder="1" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })} />
                   </div>
                   <div className="form-group">
@@ -521,31 +463,30 @@ function Products() {
                 <div className="form-grid">
                   <div className="form-group">
                     <label>Category *</label>
-                    <select required value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                      <option value="">Select category</option>
-                      <option value="women">Women</option>
-                      <option value="men">Men</option>
-                      <option value="accessories">Accessories</option>
-                      <option value="shoes">Shoes</option>
-                      <option value="bags">Bags</option>
-                    </select>
+                    <div className="category-select-wrapper">
+                      {categoriesLoading ? (
+                        <select disabled><option>Loading categories...</option></select>
+                      ) : (
+                        <select required value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                          <option value="">Select category</option>
+                          {categories.map(cat => (
+                            <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                          ))}
+                        </select>
+                      )}
+                      <Tooltip text="Add a new category">
+                        <button type="button" className="add-category-btn" onClick={() => setShowCategoryModal(true)}>
+                          <Plus size={16} />
+                        </button>
+                      </Tooltip>
+                    </div>
                   </div>
                   <div className="form-group">
-                    <label>
-                      Subcategory
-                      <Tooltip text="More specific classification, e.g. 'Totes', 'Jackets', 'Sneakers'">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Subcategory <Tooltip text="More specific classification, e.g. 'Totes', 'Jackets', 'Sneakers'"><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="text" placeholder="e.g. Totes, Jackets" value={formData.subcategory} onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label>
-                      Available Sizes
-                      <Tooltip text="Comma-separated sizes, e.g. 'S, M, L' or '38, 40, 42'. Leave blank if one-size.">
-                        <span className="field-info"><Info size={13} /></span>
-                      </Tooltip>
-                    </label>
+                    <label>Available Sizes <Tooltip text="Comma-separated sizes, e.g. 'S, M, L' or '38, 40, 42'. Leave blank if one-size."><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="text" placeholder="e.g. S, M, L or 38, 40, 42" value={formData.size} onChange={(e) => setFormData({ ...formData, size: e.target.value })} />
                   </div>
                   <div className="form-group">
@@ -587,6 +528,37 @@ function Products() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Category Modal */}
+      {showCategoryModal && (
+        <div className="modal-overlay" onClick={() => setShowCategoryModal(false)}>
+          <div className="modal-content-small" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add New Category</h3>
+              <button className="modal-close" onClick={() => setShowCategoryModal(false)}><X size={18} /></button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Category Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Jackets, Sneakers, Watches"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addCategory()}
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={() => setShowCategoryModal(false)}>Cancel</button>
+              <button className="btn-primary" onClick={addCategory} disabled={addingCategory || !newCategoryName.trim()}>
+                {addingCategory ? 'Adding...' : 'Add Category'}
+              </button>
+            </div>
           </div>
         </div>
       )}

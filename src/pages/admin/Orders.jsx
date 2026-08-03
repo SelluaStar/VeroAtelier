@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Search, Eye } from 'lucide-react';
+import LoadingCard from '../../components/LoadingCard';
 import './Orders.css';
 
 function Orders() {
@@ -92,8 +93,11 @@ function Orders() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
-                  Loading...
+                <td colSpan="6">
+                  <div style={{ display: 'flex', gap: '1rem', padding: '2rem' }}>
+                    <LoadingCard />
+                    <LoadingCard />
+                  </div>
                 </td>
               </tr>
             ) : filteredOrders.length === 0 ? (

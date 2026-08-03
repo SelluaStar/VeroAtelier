@@ -12,6 +12,7 @@ function Shop() {
   const searchQuery = searchParams.get('search');
 
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeGender, setActiveGender] = useState(category || 'all');
@@ -23,41 +24,50 @@ function Shop() {
   });
   const [showFilterDropdown, setShowFilterDropdown] = useState(null);
 
-  // Check if we're on a category page (men, women, unisex)
+  // Check if we're on a category page
   const isMainShopPage = !category;
 
-  // Get unique brands and categories
+  // Get unique brands
   const allBrands = [...new Set(products.map(p => p.brand).filter(Boolean))];
-  const allCategories = [...new Set(products.map(p => p.category).filter(Boolean))];
 
-  // Fetch products from Supabase
+  // Fetch categories and products from Supabase
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
+        // Fetch categories
+        const { data: categoriesData, error: catError } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name', { ascending: true });
+
+        if (catError) throw catError;
+        setCategories(categoriesData || []);
+
+        // Fetch products
+        const { data: productsData, error: prodError } = await supabase
           .from('products')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (prodError) throw prodError;
 
-        // Transform data to match expected format
-        const transformedProducts = data.map(product => ({
+        // Transform data
+        const transformedProducts = (productsData || []).map(product => ({
           ...product,
-          images: product.image_url ? [product.image_url] : [],
-          brand: 'VeroAtelier' // Default brand since we don't have brand field yet
+          images: product.images?.length ? product.images : product.image_url ? [product.image_url] : [],
+          brand: product.brand || 'VeroAtelier'
         }));
 
         setProducts(transformedProducts);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setIsLoading(false);
       }
     }
 
-    fetchProducts();
+    fetchData();
   }, []);
 
   // Update filters when URL param changes
@@ -161,7 +171,7 @@ function Shop() {
               : 'All Products'}
           </h1>
 
-          {/* Section Toggle - Only show on main shop page (/shop), hide when searching or on category pages */}
+          {/* Category Toggle - Only show on main shop page */}
           {!searchQuery && isMainShopPage && (
             <div className="gender-toggle">
               <button
@@ -170,24 +180,15 @@ function Shop() {
               >
                 All
               </button>
-              <button
-                className={`gender-btn ${activeGender === 'men' ? 'active' : ''}`}
-                onClick={() => setActiveGender('men')}
-              >
-                Men
-              </button>
-              <button
-                className={`gender-btn ${activeGender === 'women' ? 'active' : ''}`}
-                onClick={() => setActiveGender('women')}
-              >
-                Women
-              </button>
-              <button
-                className={`gender-btn ${activeGender === 'unisex' ? 'active' : ''}`}
-                onClick={() => setActiveGender('unisex')}
-              >
-                Unisex
-              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`gender-btn ${activeGender === cat.slug ? 'active' : ''}`}
+                  onClick={() => setActiveGender(cat.slug)}
+                >
+                  {cat.name}
+                </button>
+              ))}
             </div>
           )}
         </div>
