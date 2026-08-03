@@ -15,13 +15,18 @@ function VerifyEmail() {
   const email = location.state?.email || '';
   const password = location.state?.password || '';
   const fullName = location.state?.fullName || '';
+  const tempCode = location.state?.tempCode || ''; // Temporary for testing
   const inputRefs = useRef([]);
 
   useEffect(() => {
     if (!email) {
       navigate('/signup');
     }
-  }, [email, navigate]);
+    // Show the code in console for testing
+    if (tempCode) {
+      console.log('Your verification code is:', tempCode);
+    }
+  }, [email, navigate, tempCode]);
 
   const handleChange = (index, value) => {
     if (value.length > 1) {
@@ -157,6 +162,18 @@ function VerifyEmail() {
             <h1>Check your email</h1>
             <p>Enter the verification code sent to</p>
             <p className="verify-email">{email}</p>
+            {tempCode && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '0.75rem',
+                background: 'rgba(102, 126, 234, 0.1)',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                color: '#667eea'
+              }}>
+                Testing Mode: Your code is <strong>{tempCode}</strong>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="verify-form">

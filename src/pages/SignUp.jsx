@@ -47,9 +47,13 @@ function SignUp() {
 
       if (insertError) throw insertError;
 
+      // TODO: Send email with verification code
+      // For now, we'll pass the code to the verification page for testing
+      console.log('Verification code:', verificationCode);
+
       // Navigate to verification page
       navigate('/verify-email', {
-        state: { email, password, fullName }
+        state: { email, password, fullName, tempCode: verificationCode }
       });
     } catch (err) {
       setError(err.message || 'Failed to create account. Please try again.');
