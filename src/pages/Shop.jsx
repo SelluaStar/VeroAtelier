@@ -209,14 +209,14 @@ function Shop() {
               </button>
               {showFilterDropdown === 'category' && (
                 <div className="filter-dropdown-menu">
-                  {allCategories.map(cat => (
-                    <label key={cat} className="filter-checkbox-label">
+                  {categories.map(cat => (
+                    <label key={cat.id} className="filter-checkbox-label">
                       <input
                         type="checkbox"
-                        checked={filters.subcategories.includes(cat.toLowerCase())}
-                        onChange={() => toggleFilter('subcategories', cat.toLowerCase())}
+                        checked={filters.subcategories.includes(cat.slug)}
+                        onChange={() => toggleFilter('subcategories', cat.slug)}
                       />
-                      <span>{cat}</span>
+                      <span>{cat.name}</span>
                     </label>
                   ))}
                 </div>
