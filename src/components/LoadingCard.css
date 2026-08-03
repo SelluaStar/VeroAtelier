@@ -1,0 +1,100 @@
+.loading-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.loading-card-image {
+  width: 100%;
+  height: 400px;
+  background: #f0f0f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-card-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.loading-card-line {
+  height: 16px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer animation */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e8e8e8 20%,
+    #f0f0f0 40%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Alternative shimmer with gradient overlay */
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmerOverlay 1.5s infinite;
+}
+
+@keyframes shimmerOverlay {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Featured card variant */
+.loading-card-featured {
+  height: 100%;
+}
+
+/* Category card variant */
+.loading-card-category {
+  height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .loading-card-image {
+    height: 300px;
+  }
+
+  .loading-card-content {
+    padding: 1rem;
+  }
+}

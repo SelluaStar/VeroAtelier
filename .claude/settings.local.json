@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__deploy_to_vercel",
+      "mcp__vercel__get_deployment",
+      "mcp__vercel__get_deployment_build_logs",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(gh repo *)",
+      "Bash(curl -fsSL https://composio.dev/install)",
+      "Bash(bash)",
+      "Bash(composio login *)",
+      "Read(//c/Users/Sellu/.composio/bin/**)",
+      "Read(//c/Users/Sellu/bin/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(python -m composio --version)",
+      "Bash(python3 -m composio --version)",
+      "Bash(pip show *)",
+      "Bash(npm list *)",
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(C:/Users/Sellu/AppData/Local/Python/pythoncore-3.14-64/Scripts/composio.exe login *)",
+      "mcp__github__create_repository",
+      "Bash(git branch *)",
+      "Bash(git remote)",
+      "Bash(git push *)",
+      "Bash(git revert *)",
+      "Bash(npm install *)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__get_publishable_keys",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "aidesigner",
+    "github",
+    "supabase"
+  ]
+}
