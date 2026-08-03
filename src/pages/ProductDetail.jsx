@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { products } from '../data/products';
+import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { ChevronLeft, Check, Heart } from 'lucide-react';
@@ -8,12 +8,69 @@ import './ProductDetail.css';
 
 function ProductDetail() {
   const { id } = useParams();
-  const product = products.find((p) => p.id === Number(id));
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const { addToCart } = useCart();
   const { addToast } = useToast();
+
+  useEffect(() => {
+    fetchProduct();
+  }, [id]);
+
+  const fetchProduct = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      // Normalise images field
+      const images = data.images?.length
+        ? data.images
+        : data.image_url
+        ? [data.image_url]
+        : [];
+
+      const normalised = { ...data, images, sizes: data.size ? data.size.split(',').map(s => s.trim()) : [] };
+      setProduct(normalised);
+
+      // Fetch related products from same category
+      const { data: related } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', data.category)
+        .neq('id', id)
+        .limit(4);
+
+      setRelatedProducts((related || []).map(p => ({
+        ...p,
+        images: p.images?.length ? p.images : p.image_url ? [p.image_url] : []
+      })));
+    } catch (err) {
+      console.error('Error fetching product:', err);
+      setProduct(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="not-found-page">
+        <div className="not-found-content">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -21,16 +78,14 @@ function ProductDetail() {
         <div className="not-found-content">
           <h1>Product not found</h1>
           <p>The item you're looking for doesn't exist or has been removed.</p>
-          <Link to="/shop" className="btn-primary">
-            Back to Shop
-          </Link>
+          <Link to="/shop" className="btn-primary">Back to Shop</Link>
         </div>
       </div>
     );
   }
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
+    if (product.sizes?.length && !selectedSize) {
       addToast('Please select a size', 'error');
       return;
     }
@@ -38,17 +93,13 @@ function ProductDetail() {
     addToast(`${product.name} added to cart!`, 'success');
   };
 
-  const savings = product.originalPrice - product.price;
-  const savingsPercent = Math.round((savings / product.originalPrice) * 100);
-
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  const originalPrice = product.original_price || product.originalPrice;
+  const savings = originalPrice ? originalPrice - product.price : 0;
+  const savingsPercent = originalPrice ? Math.round((savings / originalPrice) * 100) : 0;
 
   return (
     <div className="product-detail-page">
       <div className="product-detail-container">
-        {/* Breadcrumb */}
         <div className="breadcrumb">
           <Link to="/shop" className="breadcrumb-link">
             <ChevronLeft size={18} />
@@ -62,36 +113,37 @@ function ProductDetail() {
           {/* Image Gallery */}
           <div className="product-gallery">
             <div className="gallery-main">
-              <img
-                src={product.images[selectedImage]}
-                alt={product.name}
-                className="gallery-main-img"
-              />
-              {product.originalPrice && (
-                <div className="gallery-badge">
-                  -{savingsPercent}% OFF
+              {product.images[selectedImage] ? (
+                <img src={product.images[selectedImage]} alt={product.name} className="gallery-main-img" />
+              ) : (
+                <div style={{ width: '100%', height: '100%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+                  No image
                 </div>
               )}
+              {originalPrice && savingsPercent > 0 && (
+                <div className="gallery-badge">-{savingsPercent}% OFF</div>
+              )}
             </div>
-            <div className="gallery-thumbnails">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  className={`gallery-thumbnail ${selectedImage === index ? 'active' : ''}`}
-                  onClick={() => setSelectedImage(index)}
-                >
-                  <img src={image} alt={`View ${index + 1}`} />
-                </button>
-              ))}
-            </div>
+            {product.images.length > 1 && (
+              <div className="gallery-thumbnails">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    className={`gallery-thumbnail ${selectedImage === index ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(index)}
+                  >
+                    <img src={image} alt={`View ${index + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Information */}
           <div className="product-info-panel">
-            {/* Header */}
             <div className="product-info-header">
               <div>
-                <div className="product-brand-badge">{product.brand}</div>
+                {product.brand && <div className="product-brand-badge">{product.brand}</div>}
                 <h1 className="product-info-title">{product.name}</h1>
               </div>
               <button
@@ -103,72 +155,72 @@ function ProductDetail() {
               </button>
             </div>
 
-            {/* Pricing */}
             <div className="product-info-pricing">
               <div className="pricing-main">
-                <span className="pricing-current">${product.price}</span>
-                {product.originalPrice && (
-                  <span className="pricing-original">${product.originalPrice}</span>
+                <span className="pricing-current">${Number(product.price).toFixed(2)}</span>
+                {originalPrice && (
+                  <span className="pricing-original">${Number(originalPrice).toFixed(2)}</span>
                 )}
               </div>
-              {product.originalPrice && (
+              {originalPrice && savings > 0 && (
                 <div className="pricing-savings">
-                  You save ${savings} ({savingsPercent}% off retail)
+                  You save ${savings.toFixed(2)} ({savingsPercent}% off retail)
                 </div>
               )}
             </div>
 
-            {/* Key Features */}
             <div className="product-features">
               <div className="feature-item">
                 <Check size={18} />
                 <span>100% Authenticated</span>
               </div>
-              <div className="feature-item">
-                <Check size={18} />
-                <span>{product.condition} Condition</span>
-              </div>
+              {product.condition && (
+                <div className="feature-item">
+                  <Check size={18} />
+                  <span>{product.condition} Condition</span>
+                </div>
+              )}
               <div className="feature-item">
                 <Check size={18} />
                 <span>14-Day Returns</span>
               </div>
             </div>
 
-            {/* Size Selection */}
-            <div className="size-selection">
-              <div className="size-selection-header">
-                <h3>Select Size</h3>
-                <button className="size-guide-btn">Size Guide</button>
+            {product.sizes?.length > 0 && (
+              <div className="size-selection">
+                <div className="size-selection-header">
+                  <h3>Select Size</h3>
+                  <button className="size-guide-btn">Size Guide</button>
+                </div>
+                <div className="size-options-grid">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      className={`size-option ${selectedSize === size ? 'selected' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="size-options-grid">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    className={`size-option ${selectedSize === size ? 'selected' : ''}`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
 
-            {/* Add to Cart */}
             <button
               className="add-to-cart-btn"
               onClick={handleAddToCart}
-              disabled={!selectedSize}
+              disabled={product.sizes?.length > 0 && !selectedSize}
             >
-              {selectedSize ? 'Add to Cart' : 'Select a Size'}
+              {product.sizes?.length > 0 && !selectedSize ? 'Select a Size' : 'Add to Cart'}
             </button>
 
-            {/* Description */}
-            <div className="product-description-panel">
-              <h3>Product Details</h3>
-              <p>{product.description}</p>
-            </div>
+            {product.description && (
+              <div className="product-description-panel">
+                <h3>Product Details</h3>
+                <p>{product.description}</p>
+              </div>
+            )}
 
-            {/* Additional Info */}
             <div className="product-additional-info">
               <details className="info-accordion">
                 <summary>Shipping & Returns</summary>
@@ -186,24 +238,19 @@ function ProductDetail() {
           </div>
         </div>
 
-        {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="related-products-section">
             <h2 className="related-heading">You May Also Like</h2>
             <div className="related-products-grid">
-              {relatedProducts.map((relatedProduct) => (
-                <Link
-                  key={relatedProduct.id}
-                  to={`/product/${relatedProduct.id}`}
-                  className="related-product-card"
-                >
+              {relatedProducts.map((rp) => (
+                <Link key={rp.id} to={`/product/${rp.id}`} className="related-product-card">
                   <div className="related-product-img">
-                    <img src={relatedProduct.images[0]} alt={relatedProduct.name} />
+                    {rp.images[0] && <img src={rp.images[0]} alt={rp.name} />}
                   </div>
                   <div className="related-product-info">
-                    <div className="related-product-brand">{relatedProduct.brand}</div>
-                    <h4 className="related-product-name">{relatedProduct.name}</h4>
-                    <div className="related-product-price">${relatedProduct.price}</div>
+                    {rp.brand && <div className="related-product-brand">{rp.brand}</div>}
+                    <h4 className="related-product-name">{rp.name}</h4>
+                    <div className="related-product-price">${Number(rp.price).toFixed(2)}</div>
                   </div>
                 </Link>
               ))}
