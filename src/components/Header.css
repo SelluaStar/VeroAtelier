@@ -19,10 +19,11 @@
   right: 0;
   bottom: 0;
   background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(100px) saturate(200%);
   -webkit-backdrop-filter: blur(100px) saturate(200%);
+  backdrop-filter: blur(100px) saturate(200%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   z-index: -1;
+  will-change: backdrop-filter;
 }
 
 .header.scrolled {
@@ -38,13 +39,14 @@
 
 .header.scrolled::before {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(120px) saturate(200%);
   -webkit-backdrop-filter: blur(120px) saturate(200%);
+  backdrop-filter: blur(120px) saturate(200%);
   border-radius: 60px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
               inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border-bottom: none;
+  will-change: backdrop-filter;
 }
 
 @keyframes popOutFromTop {
@@ -148,8 +150,8 @@
   transform: translateX(-50%);
   margin-top: 1rem;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-radius: 12px;
   padding: 0.75rem 0;
   min-width: 180px;
@@ -308,8 +310,8 @@
   padding: 0;
   border: none;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-radius: 24px;
   font-size: 0.875rem;
   color: var(--color-black);
@@ -477,8 +479,8 @@
   left: 0;
   width: 100%;
   background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(100px) saturate(200%);
   -webkit-backdrop-filter: blur(100px) saturate(200%);
+  backdrop-filter: blur(100px) saturate(200%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   padding: 2rem 3rem;
   margin-top: 1rem;
