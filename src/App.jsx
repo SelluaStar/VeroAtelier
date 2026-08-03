@@ -12,6 +12,12 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import VerifyEmail from './pages/VerifyEmail';
 import Onboarding from './pages/Onboarding';
+import AdminLayout from './pages/admin/AdminLayout';
+import Dashboard from './pages/admin/Dashboard';
+import Products from './pages/admin/Products';
+import Orders from './pages/admin/Orders';
+import Users from './pages/admin/Users';
+import Coupons from './pages/admin/Coupons';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
@@ -20,12 +26,13 @@ import './App.css';
 function AppContent() {
   const location = useLocation();
   const isAuthPage = ['/signin', '/signup', '/verify-email', '/onboarding'].includes(location.pathname);
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   return (
     <div className="app">
-      {!isAuthPage && <Header />}
-      {!isAuthPage && <CartDrawer />}
-      <main className={`main-content ${!isAuthPage ? 'with-header' : ''}`}>
+      {!isAuthPage && !isAdminPage && <Header />}
+      {!isAuthPage && !isAdminPage && <CartDrawer />}
+      <main className={`main-content ${!isAuthPage && !isAdminPage ? 'with-header' : ''}`}>
         <PageTransition key={location.pathname}>
           <Routes location={location}>
             <Route path="/" element={<Home />} />
@@ -38,10 +45,19 @@ function AppContent() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/onboarding" element={<Onboarding />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="products" element={<Products />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="users" element={<Users />} />
+              <Route path="coupons" element={<Coupons />} />
+            </Route>
           </Routes>
         </PageTransition>
       </main>
-      {!isAuthPage && <Footer />}
+      {!isAuthPage && !isAdminPage && <Footer />}
     </div>
   );
 }

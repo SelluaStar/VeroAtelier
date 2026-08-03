@@ -1,0 +1,130 @@
+.admin-users {
+  padding: 2rem;
+}
+
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.users-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.users-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stat-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.users-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.admin-toggle {
+  background: none;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-toggle:hover {
+  border-color: rgba(102, 126, 234, 0.5);
+  color: #667eea;
+}
+
+.admin-toggle.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .admin-users {
+    padding: 1rem;
+  }
+
+  .users-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .users-stats {
+    width: 100%;
+  }
+
+  .stat-badge {
+    flex: 1;
+  }
+
+  .admin-table th:nth-child(3),
+  .admin-table td:nth-child(3),
+  .admin-table th:nth-child(4),
+  .admin-table td:nth-child(4),
+  .admin-table th:nth-child(5),
+  .admin-table td:nth-child(5) {
+    display: none;
+  }
+}

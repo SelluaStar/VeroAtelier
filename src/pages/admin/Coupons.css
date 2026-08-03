@@ -1,0 +1,166 @@
+.admin-coupons {
+  padding: 2rem;
+}
+
+.coupons-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.coupons-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.coupons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.loading-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: rgba(0, 0, 0, 0.4);
+  gap: 1rem;
+}
+
+.empty-state p {
+  font-size: 1.125rem;
+}
+
+/* Coupon Card */
+.coupon-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.coupon-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.coupon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupon-code {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.05em;
+}
+
+.toggle-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: white;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: rgba(34, 197, 94, 0.1);
+  color: rgb(21, 128, 61);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.toggle-btn:not(.active) {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgb(185, 28, 28);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.coupon-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.coupon-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Form */
+.coupon-form {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-coupons {
+    padding: 1rem;
+  }
+
+  .coupons-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .coupons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coupon-form {
+    padding: 1.5rem;
+  }
+}

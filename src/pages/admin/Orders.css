@@ -1,0 +1,111 @@
+.admin-orders {
+  padding: 2rem;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.orders-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.orders-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.orders-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.order-number {
+  font-weight: 700;
+  color: #667eea;
+}
+
+.customer-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.customer-email {
+  font-size: 0.8125rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.order-total {
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.status-select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-select.status-pending {
+  background: rgba(251, 191, 36, 0.1);
+  color: rgb(180, 83, 9);
+}
+
+.status-select.status-processing {
+  background: rgba(59, 130, 246, 0.1);
+  color: rgb(29, 78, 216);
+}
+
+.status-select.status-shipped {
+  background: rgba(168, 85, 247, 0.1);
+  color: rgb(109, 40, 217);
+}
+
+.status-select.status-delivered {
+  background: rgba(34, 197, 94, 0.1);
+  color: rgb(21, 128, 61);
+}
+
+.status-select.status-cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgb(185, 28, 28);
+}
+
+@media (max-width: 768px) {
+  .admin-orders {
+    padding: 1rem;
+  }
+
+  .orders-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .orders-stats {
+    width: 100%;
+  }
+
+  .stat-badge {
+    flex: 1;
+  }
+
+  .admin-table th:nth-child(3),
+  .admin-table td:nth-child(3) {
+    display: none;
+  }
+}
