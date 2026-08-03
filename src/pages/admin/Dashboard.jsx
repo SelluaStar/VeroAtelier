@@ -6,7 +6,10 @@ import {
   TrendingUp,
   TrendingDown,
   ShoppingCart,
-  Users
+  AlertCircle,
+  Tag,
+  Settings,
+  BarChart3
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -14,11 +17,10 @@ function Dashboard() {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalSales: 0,
-    totalRevenue: 0,
-    totalOrders: 0,
-    totalUsers: 0
+    totalIncome: 0,
+    totalExpenses: 0
   });
-  const [recentOrders, setRecentOrders] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,42 +35,71 @@ function Dashboard() {
         .from('products')
         .select('*', { count: 'exact', head: true });
 
-      // Get orders count and revenue
+      // Get orders and calculate revenue
       const { data: orders } = await supabase
         .from('orders')
-        .select('total, status');
+        .select('total, status, created_at, order_number, profiles(full_name)');
 
-      const totalRevenue = orders?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
+      const totalIncome = orders?.reduce((sum, order) =>
+        order.status === 'delivered' ? sum + Number(order.total) : sum, 0) || 0;
+
       const completedOrders = orders?.filter(o => o.status === 'delivered').length || 0;
 
-      // Get users count
-      const { count: usersCount } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true });
-
-      // Get recent orders
-      const { data: recentOrdersData } = await supabase
-        .from('orders')
-        .select('*, profiles(full_name, email)')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      // Get top products
+      // Get top products by stock
       const { data: topProductsData } = await supabase
         .from('products')
-        .select('*')
+        .select('id, name, images, image_url, stock, price')
         .order('stock', { ascending: false })
         .limit(5);
+
+      // Create mock activity (in real app, would come from activity_logs table)
+      const mockActivity = [
+        {
+          id: 1,
+          type: 'order',
+          title: `Order #${orders?.[0]?.order_number || '2048'}`,
+          subtitle: orders?.[0]?.profiles?.full_name || 'John Doe',
+          date: orders?.[0]?.created_at ? new Date(orders[0].created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '12 Jan 25',
+          badge: 'New Order',
+          badgeClass: 'new-order'
+        },
+        {
+          id: 2,
+          type: 'alert',
+          title: 'Low Stock Alert',
+          subtitle: topProductsData?.[0]?.name || 'MacBook Air M2',
+          date: '10 Jan 26',
+          badge: 'Low Stock',
+          badgeClass: 'low-stock'
+        },
+        {
+          id: 3,
+          type: 'promo',
+          title: 'Promo code "SUMMER20"',
+          subtitle: 'Applied 52 times',
+          date: '8 Jan 25',
+          badge: 'Campaign',
+          badgeClass: 'campaign'
+        },
+        {
+          id: 4,
+          type: 'system',
+          title: 'System Update',
+          subtitle: 'Version 1.2.1',
+          date: '2 Jan 25',
+          badge: 'System',
+          badgeClass: 'system'
+        }
+      ];
 
       setStats({
         totalProducts: productsCount || 0,
         totalSales: completedOrders,
-        totalRevenue: totalRevenue,
-        totalOrders: orders?.length || 0,
-        totalUsers: usersCount || 0
+        totalIncome: totalIncome,
+        totalExpenses: totalIncome * 0.08 // Mock 8% expenses
       });
 
-      setRecentOrders(recentOrdersData || []);
+      setRecentActivity(mockActivity);
       setTopProducts(topProductsData || []);
     } catch (error) {
       console.error('Error loading dashboard:', error);
@@ -76,6 +107,13 @@ function Dashboard() {
       setLoading(false);
     }
   };
+
+  const categories = [
+    { name: 'Electronics', amount: 85000, percentage: 68, color: '#6366f1' },
+    { name: 'Fashion', amount: 25000, percentage: 20, color: '#f59e0b' },
+    { name: 'Health & Wellness', amount: 10000, percentage: 8, color: '#ec4899' },
+    { name: 'Home & Living', amount: 5000, percentage: 4, color: '#22c55e' }
+  ];
 
   if (loading) {
     return (
@@ -94,8 +132,14 @@ function Dashboard() {
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon blue">
-            <Package size={24} />
+          <div className="stat-header">
+            <div className="stat-icon blue">
+              <Package size={24} />
+            </div>
+            <div className="stat-trend up">
+              <TrendingUp size={16} />
+              12%
+            </div>
           </div>
           <div className="stat-content">
             <p className="stat-label">Total Products</p>
@@ -104,8 +148,14 @@ function Dashboard() {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon purple">
-            <ShoppingCart size={24} />
+          <div className="stat-header">
+            <div className="stat-icon purple">
+              <DollarSign size={24} />
+            </div>
+            <div className="stat-trend up">
+              <TrendingUp size={16} />
+              8%
+            </div>
           </div>
           <div className="stat-content">
             <p className="stat-label">Total Sales</p>
@@ -114,82 +164,186 @@ function Dashboard() {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon green">
-            <TrendingUp size={24} />
+          <div className="stat-header">
+            <div className="stat-icon green">
+              <TrendingDown size={24} style={{ transform: 'rotate(180deg)' }} />
+            </div>
+            <div className="stat-trend up">
+              <TrendingUp size={16} />
+              15%
+            </div>
           </div>
           <div className="stat-content">
-            <p className="stat-label">Total Revenue</p>
-            <h2 className="stat-value">${stats.totalRevenue.toLocaleString()}</h2>
+            <p className="stat-label">Total Income</p>
+            <h2 className="stat-value">${stats.totalIncome.toLocaleString()}</h2>
           </div>
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon orange">
-            <Users size={24} />
+          <div className="stat-header">
+            <div className="stat-icon orange">
+              <TrendingUp size={24} />
+            </div>
+            <div className="stat-trend down">
+              <TrendingDown size={16} />
+              3%
+            </div>
           </div>
           <div className="stat-content">
-            <p className="stat-label">Total Users</p>
-            <h2 className="stat-value">{stats.totalUsers.toLocaleString()}</h2>
+            <p className="stat-label">Total Expenses</p>
+            <h2 className="stat-value">${Math.round(stats.totalExpenses).toLocaleString()}</h2>
           </div>
         </div>
       </div>
 
-      {/* Recent Activity & Top Products */}
-      <div className="dashboard-grid">
-        <div className="dashboard-section">
+      {/* Revenue Chart & Categories */}
+      <div className="dashboard-main">
+        <div className="chart-section">
           <div className="section-header">
-            <h3>Recent Orders</h3>
+            <div className="section-title">
+              <BarChart3 size={20} />
+              Sales Revenue
+            </div>
+            <div className="chart-tabs">
+              <button className="chart-tab active">Monthly</button>
+              <button className="chart-tab">Quarterly</button>
+              <button className="chart-tab">Yearly</button>
+            </div>
           </div>
-          <div className="recent-orders">
-            {recentOrders.length === 0 ? (
-              <p className="empty-state">No orders yet</p>
-            ) : (
-              recentOrders.map((order) => (
-                <div key={order.id} className="order-item">
-                  <div className="order-info">
-                    <p className="order-number">Order #{order.order_number}</p>
-                    <p className="order-customer">{order.profiles?.full_name || 'Guest'}</p>
-                  </div>
-                  <div className="order-meta">
-                    <span className={`order-status status-${order.status}`}>
-                      {order.status}
-                    </span>
-                    <span className="order-amount">${Number(order.total).toFixed(2)}</span>
+          <div className="chart-placeholder">
+            Chart visualization coming soon
+          </div>
+        </div>
+
+        <div className="categories-section">
+          <div className="section-header">
+            <div className="section-title">
+              <Tag size={20} />
+              Top Categories
+            </div>
+            <a href="#" className="see-all-link">See All</a>
+          </div>
+
+          <div className="categories-chart">
+            <div style={{
+              width: '140px',
+              height: '140px',
+              borderRadius: '50%',
+              background: `conic-gradient(
+                ${categories[0].color} 0% ${categories[0].percentage}%,
+                ${categories[1].color} ${categories[0].percentage}% ${categories[0].percentage + categories[1].percentage}%,
+                ${categories[2].color} ${categories[0].percentage + categories[1].percentage}% ${categories[0].percentage + categories[1].percentage + categories[2].percentage}%,
+                ${categories[3].color} ${categories[0].percentage + categories[1].percentage + categories[2].percentage}% 100%
+              )`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{
+                width: '90px',
+                height: '90px',
+                borderRadius: '50%',
+                background: 'white',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Sales</div>
+                <div style={{ fontSize: '1.125rem', fontWeight: 700 }}>$125,000</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="category-list">
+            {categories.map((cat, idx) => (
+              <div key={idx} className="category-item">
+                <div className="category-info">
+                  <div className="category-dot" style={{ background: cat.color }} />
+                  <span className="category-name">{cat.name}</span>
+                </div>
+                <div className="category-stats">
+                  <span className="category-amount">${cat.amount.toLocaleString()}</span>
+                  <span className="category-percentage">{cat.percentage}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Activity & Products */}
+      <div className="dashboard-bottom">
+        <div className="dashboard-section">
+          <div className="section-header-with-link">
+            <div className="section-title">Recent Activity</div>
+            <a href="#" className="see-all-link">See All</a>
+          </div>
+
+          <div className="activity-feed">
+            {recentActivity.map((activity) => (
+              <div key={activity.id} className="activity-item">
+                <div className={`activity-icon ${activity.type}`}>
+                  {activity.type === 'order' && <ShoppingCart size={20} />}
+                  {activity.type === 'alert' && <AlertCircle size={20} />}
+                  {activity.type === 'promo' && <Tag size={20} />}
+                  {activity.type === 'system' && <Settings size={20} />}
+                </div>
+                <div className="activity-content">
+                  <div className="activity-title">{activity.title}</div>
+                  <div className="activity-subtitle">
+                    {activity.subtitle} · {activity.date}
                   </div>
                 </div>
-              ))
-            )}
+                <div className={`activity-badge ${activity.badgeClass}`}>
+                  {activity.badge}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
         <div className="dashboard-section">
-          <div className="section-header">
-            <h3>Top Products</h3>
+          <div className="section-header-with-link">
+            <div className="section-title">Top Products</div>
+            <a href="#" className="see-all-link">See All</a>
           </div>
-          <div className="top-products">
-            {topProducts.length === 0 ? (
-              <p className="empty-state">No products yet</p>
-            ) : (
-              <table className="products-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Stock</th>
-                    <th>Price</th>
+
+          {topProducts.length === 0 ? (
+            <div className="empty-state">No products yet</div>
+          ) : (
+            <table className="products-table-compact">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Stock</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topProducts.map((product) => (
+                  <tr key={product.id}>
+                    <td>
+                      <div className="product-cell-compact">
+                        {(product.images?.[0] || product.image_url) ? (
+                          <img
+                            src={product.images?.[0] || product.image_url}
+                            alt={product.name}
+                            className="product-img-compact"
+                          />
+                        ) : (
+                          <div className="product-img-compact" style={{ background: '#e5e7eb' }} />
+                        )}
+                        <span className="product-name-compact">{product.name}</span>
+                      </div>
+                    </td>
+                    <td>{product.stock}</td>
+                    <td>${Number(product.price).toFixed(2)}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {topProducts.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.name}</td>
-                      <td>{product.stock}</td>
-                      <td>${Number(product.price).toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
