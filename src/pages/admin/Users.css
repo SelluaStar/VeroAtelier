@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 .admin-users {
-  padding: 2rem;
+  padding: 2.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .users-header {
@@ -11,8 +14,9 @@
 
 .users-header h1 {
   font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-black);
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.03em;
 }
 
 .users-stats {
@@ -25,24 +29,38 @@
   flex-direction: column;
   align-items: center;
   padding: 1rem 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .stat-count {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-black);
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.02em;
 }
 
 .stat-label {
   font-size: 0.8125rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: #666;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .users-toolbar {
   margin-bottom: 1.5rem;
+}
+
+.users-table-container {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .user-cell {
@@ -54,55 +72,87 @@
 .user-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
   object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .avatar-placeholder {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #000;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
 }
 
 .user-name {
-  font-weight: 600;
-  color: var(--color-black);
+  font-weight: 700;
+  color: #000;
+  letter-spacing: -0.01em;
 }
 
 .admin-toggle {
   background: none;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  padding: 0.5rem;
-  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.625rem;
   cursor: pointer;
-  color: rgba(0, 0, 0, 0.4);
-  transition: all 0.2s ease;
+  color: #666;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .admin-toggle:hover {
-  border-color: rgba(102, 126, 234, 0.5);
-  color: #667eea;
+  border-color: #000;
+  color: #000;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .admin-toggle.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: transparent;
+  background: #000;
+  border-color: #000;
   color: white;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table thead {
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.02);
 }
 
 @media (max-width: 768px) {
   .admin-users {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
   .users-header {

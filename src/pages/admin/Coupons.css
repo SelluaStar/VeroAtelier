@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 .admin-coupons {
-  padding: 2rem;
+  padding: 2.5rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .coupons-header {
@@ -11,8 +14,9 @@
 
 .coupons-header h1 {
   font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-black);
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.03em;
 }
 
 .coupons-grid {
@@ -25,7 +29,8 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: #999;
+  font-weight: 600;
 }
 
 .empty-state {
@@ -35,29 +40,34 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: rgba(0, 0, 0, 0.4);
+  color: #999;
   gap: 1rem;
 }
 
 .empty-state p {
   font-size: 1.125rem;
+  font-weight: 600;
+  color: #666;
 }
 
 /* Coupon Card */
 .coupon-card {
-  background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .coupon-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .coupon-header {
@@ -70,43 +80,42 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.875rem 1.25rem;
+  background: #000;
   color: white;
-  border-radius: 12px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.125rem;
   letter-spacing: 0.05em;
 }
 
 .toggle-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0.625rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   background: white;
-  color: rgba(0, 0, 0, 0.6);
+  color: #666;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .toggle-btn.active {
-  background: rgba(34, 197, 94, 0.1);
-  color: rgb(21, 128, 61);
-  border-color: rgba(34, 197, 94, 0.3);
+  background: #000;
+  color: white;
+  border-color: #000;
 }
 
 .toggle-btn:not(.active) {
-  background: rgba(239, 68, 68, 0.1);
-  color: rgb(185, 28, 28);
-  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(0, 0, 0, 0.04);
+  color: #666;
 }
 
 .coupon-details {
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  gap: 1rem;
 }
 
 .detail-item {
@@ -117,37 +126,121 @@
 
 .detail-label {
   font-size: 0.875rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: #666;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-weight: 600;
 }
 
 .detail-value {
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-black);
+  font-weight: 700;
+  color: #000;
+  letter-spacing: -0.01em;
 }
 
 .coupon-actions {
   display: flex;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  gap: 0.625rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.coupon-actions .btn-icon {
+  flex: 1;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.coupon-actions .btn-icon:hover {
+  background: #000;
+  color: white;
+  border-color: #000;
 }
 
 /* Form */
 .coupon-form {
-  padding: 2rem;
+  padding: 2rem 2.5rem;
   display: flex;
   flex-direction: column;
+  gap: 2rem;
+}
+
+.coupon-form .form-group input,
+.coupon-form .form-group select {
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  transition: all 0.2s;
+  background: white;
+  color: #000;
+  font-weight: 500;
+}
+
+.coupon-form .form-group input:focus,
+.coupon-form .form-group select:focus {
+  outline: none;
+  border-color: #000;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.coupon-form .form-group label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: -0.01em;
+}
+
+.coupon-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
+}
+
+.coupon-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.coupon-form .checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: #000;
+  font-weight: 600;
+}
+
+.coupon-form .checkbox-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #000;
+}
+
+.coupon-form .modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .admin-coupons {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
   .coupons-header {
