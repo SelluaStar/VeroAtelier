@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import LoadingCard from '../components/LoadingCard';
 import './Shop.css';
 
@@ -16,10 +16,13 @@ function Shop() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Active category + subcategory are the only category-level state needed
-  const [activeCategory, setActiveCategory] = useState(category || 'all');
+  // All / Men / Women / Unisex tab
+  const [activeGender, setActiveGender] = useState(category || 'all');
+
+  // Category dropdown state (from filter bar)
+  const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(subcategoryParam || null);
-  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   const [filters, setFilters] = useState({
     brands: [],
@@ -28,13 +31,11 @@ function Shop() {
   });
   const [showFilterDropdown, setShowFilterDropdown] = useState(null);
   const dropdownRef = useRef(null);
-
   const isMainShopPage = !category;
 
-  // Unique brands from all products
   const allBrands = [...new Set(products.map(p => p.brand).filter(Boolean))];
 
-  // Build a map of category slug → unique subcategories found in products
+  // Build category slug → Set of subcategories from actual products
   const subcategoryMap = {};
   products.forEach(p => {
     if (p.category && p.subcategory) {
@@ -44,7 +45,7 @@ function Shop() {
     }
   });
 
-  // Fetch categories and products
+  // Fetch data
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
@@ -53,7 +54,6 @@ function Shop() {
           supabase.from('categories').select('*').order('name', { ascending: true }),
           supabase.from('products').select('*').order('created_at', { ascending: false }),
         ]);
-
         setCategories(categoriesData || []);
         setProducts((productsData || []).map(p => ({
           ...p,
@@ -74,22 +74,17 @@ function Shop() {
     function handleClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowFilterDropdown(null);
+        setHoveredCategory(null);
       }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Apply filters whenever dependencies change
+  // Filter logic
   useEffect(() => {
-    if (products.length === 0 && !isLoading) {
-      setFilteredProducts([]);
-      return;
-    }
-
     let filtered = [...products];
 
-    // Search query
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(p =>
@@ -100,14 +95,21 @@ function Shop() {
       );
     }
 
-    // Active category tab
-    if (activeCategory !== 'all' && !searchQuery) {
+    // Gender/department tab filter
+    if (activeGender !== 'all' && !searchQuery) {
+      filtered = filtered.filter(p =>
+        p.category?.toLowerCase() === activeGender.toLowerCase()
+      );
+    }
+
+    // Category dropdown filter (overrides gender if set)
+    if (activeCategory && !searchQuery) {
       filtered = filtered.filter(p =>
         p.category?.toLowerCase() === activeCategory.toLowerCase()
       );
     }
 
-    // Active subcategory
+    // Subcategory filter
     if (activeSubcategory && !searchQuery) {
       filtered = filtered.filter(p =>
         p.subcategory?.toLowerCase().trim() === activeSubcategory.toLowerCase().trim()
@@ -129,18 +131,7 @@ function Shop() {
     else if (filters.sortBy === 'price-high') filtered.sort((a, b) => b.price - a.price);
 
     setFilteredProducts(filtered);
-  }, [products, activeCategory, activeSubcategory, filters, searchQuery, isLoading]);
-
-  const handleCategoryClick = (slug) => {
-    setActiveCategory(slug);
-    setActiveSubcategory(null);
-    setExpandedCategory(null);
-  };
-
-  const handleExpandCategory = (e, slug) => {
-    e.stopPropagation();
-    setExpandedCategory(prev => prev === slug ? null : slug);
-  };
+  }, [products, activeGender, activeCategory, activeSubcategory, filters, searchQuery]);
 
   const toggleBrand = (brand) => {
     setFilters(prev => ({
@@ -153,13 +144,20 @@ function Shop() {
 
   const clearAllFilters = () => {
     setFilters({ brands: [], priceRange: [0, 5000], sortBy: 'newest' });
-    setActiveCategory('all');
+    setActiveCategory(null);
     setActiveSubcategory(null);
+    setActiveGender('all');
   };
 
-  const hasActiveFilters = filters.brands.length > 0 ||
-    activeCategory !== 'all' || activeSubcategory ||
-    filters.priceRange[0] > 0 || filters.priceRange[1] < 5000;
+  // Label shown on the Category dropdown button
+  const categoryLabel = activeSubcategory
+    ? activeSubcategory
+    : activeCategory
+    ? categories.find(c => c.slug === activeCategory)?.name || activeCategory
+    : 'Category';
+
+  const hasActiveFilters = filters.brands.length > 0 || activeCategory ||
+    activeSubcategory || filters.priceRange[0] > 0 || filters.priceRange[1] < 5000;
 
   return (
     <div className="shop-page">
@@ -169,68 +167,27 @@ function Shop() {
           <h1 className="shop-title-new">
             {searchQuery
               ? `Results for "${searchQuery}"`
-              : activeCategory !== 'all'
-              ? categories.find(c => c.slug === activeCategory)?.name || activeCategory
+              : activeGender !== 'all'
+              ? activeGender.charAt(0).toUpperCase() + activeGender.slice(1)
               : 'All Products'}
           </h1>
 
-          {/* Category tabs — only on main shop page and not searching */}
+          {/* All / Men / Women / Unisex tabs */}
           {!searchQuery && isMainShopPage && (
-            <div className="category-tabs">
-              <button
-                className={`category-tab ${activeCategory === 'all' ? 'active' : ''}`}
-                onClick={() => handleCategoryClick('all')}
-              >
-                All
-              </button>
-
-              {categories.map(cat => {
-                const subs = subcategoryMap[cat.slug.toLowerCase()]
-                  ? [...subcategoryMap[cat.slug.toLowerCase()]]
-                  : [];
-                const isActive = activeCategory === cat.slug;
-                const isExpanded = expandedCategory === cat.slug;
-
-                return (
-                  <div key={cat.id} className="category-tab-group">
-                    <div className={`category-tab ${isActive ? 'active' : ''}`}>
-                      <span
-                        className="category-tab-label"
-                        onClick={() => handleCategoryClick(cat.slug)}
-                      >
-                        {cat.name}
-                      </span>
-                      {subs.length > 0 && (
-                        <button
-                          className={`subcategory-expand ${isExpanded ? 'open' : ''}`}
-                          onClick={(e) => handleExpandCategory(e, cat.slug)}
-                          aria-label="Show subcategories"
-                        >
-                          <ChevronDown size={13} />
-                        </button>
-                      )}
-                    </div>
-
-                    {isExpanded && subs.length > 0 && (
-                      <div className="subcategory-dropdown">
-                        {subs.map(sub => (
-                          <button
-                            key={sub}
-                            className={`subcategory-item ${activeSubcategory === sub ? 'active' : ''}`}
-                            onClick={() => {
-                              setActiveCategory(cat.slug);
-                              setActiveSubcategory(prev => prev === sub ? null : sub);
-                              setExpandedCategory(null);
-                            }}
-                          >
-                            {sub}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+            <div className="gender-toggle">
+              {['all', 'men', 'women', 'unisex'].map(g => (
+                <button
+                  key={g}
+                  className={`gender-btn ${activeGender === g ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveGender(g);
+                    setActiveCategory(null);
+                    setActiveSubcategory(null);
+                  }}
+                >
+                  {g === 'all' ? 'All' : g.charAt(0).toUpperCase() + g.slice(1)}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -241,7 +198,91 @@ function Shop() {
         <div className="filters-bar-content">
           <div className="filters-left">
 
-            {/* Brand Dropdown — no checkboxes */}
+            {/* Custom nested Category dropdown */}
+            <div className="filter-dropdown-wrapper">
+              <button
+                className={`filter-dropdown-btn ${activeCategory || activeSubcategory ? 'active-filter' : ''}`}
+                onClick={() => {
+                  setShowFilterDropdown(showFilterDropdown === 'category' ? null : 'category');
+                  setHoveredCategory(null);
+                }}
+              >
+                {categoryLabel}
+                <ChevronDown size={14} />
+              </button>
+
+              {showFilterDropdown === 'category' && (
+                <div className="filter-dropdown-menu category-menu">
+                  {/* "All categories" clear option */}
+                  <button
+                    className={`filter-menu-item ${!activeCategory && !activeSubcategory ? 'selected' : ''}`}
+                    onClick={() => {
+                      setActiveCategory(null);
+                      setActiveSubcategory(null);
+                      setShowFilterDropdown(null);
+                    }}
+                  >
+                    All Categories
+                    {!activeCategory && !activeSubcategory && <span className="filter-check">✓</span>}
+                  </button>
+
+                  {categories.map(cat => {
+                    const subs = subcategoryMap[cat.slug.toLowerCase()]
+                      ? [...subcategoryMap[cat.slug.toLowerCase()]]
+                      : [];
+                    const isHovered = hoveredCategory === cat.id;
+                    const isSelected = activeCategory === cat.slug;
+
+                    return (
+                      <div
+                        key={cat.id}
+                        className="filter-menu-item-group"
+                        onMouseEnter={() => subs.length > 0 && setHoveredCategory(cat.id)}
+                        onMouseLeave={() => setHoveredCategory(null)}
+                      >
+                        <button
+                          className={`filter-menu-item ${isSelected ? 'selected' : ''}`}
+                          onClick={() => {
+                            setActiveCategory(cat.slug);
+                            setActiveSubcategory(null);
+                            if (subs.length === 0) setShowFilterDropdown(null);
+                          }}
+                        >
+                          {cat.name}
+                          <span className="filter-menu-item-right">
+                            {isSelected && !activeSubcategory && <span className="filter-check">✓</span>}
+                            {subs.length > 0 && <ChevronRight size={13} />}
+                          </span>
+                        </button>
+
+                        {/* Subcategory flyout */}
+                        {isHovered && subs.length > 0 && (
+                          <div className="subcategory-flyout">
+                            {subs.map(sub => (
+                              <button
+                                key={sub}
+                                className={`filter-menu-item ${activeSubcategory === sub ? 'selected' : ''}`}
+                                onClick={() => {
+                                  setActiveCategory(cat.slug);
+                                  setActiveSubcategory(sub);
+                                  setShowFilterDropdown(null);
+                                  setHoveredCategory(null);
+                                }}
+                              >
+                                {sub}
+                                {activeSubcategory === sub && <span className="filter-check">✓</span>}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Brand Dropdown */}
             {allBrands.length > 0 && (
               <div className="filter-dropdown-wrapper">
                 <button
@@ -260,9 +301,7 @@ function Shop() {
                         onClick={() => toggleBrand(brand)}
                       >
                         {brand}
-                        {filters.brands.includes(brand) && (
-                          <span className="filter-check">✓</span>
-                        )}
+                        {filters.brands.includes(brand) && <span className="filter-check">✓</span>}
                       </button>
                     ))}
                   </div>
@@ -347,10 +386,7 @@ function Shop() {
           {activeSubcategory && !isLoading && (
             <span style={{ marginLeft: '0.75rem', color: '#666' }}>
               in <strong>{activeSubcategory}</strong>
-              <button
-                onClick={() => setActiveSubcategory(null)}
-                style={{ marginLeft: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', color: '#000', fontWeight: 700, fontSize: '1rem' }}
-              >×</button>
+              <button onClick={() => setActiveSubcategory(null)} style={{ marginLeft: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}>×</button>
             </span>
           )}
         </p>
