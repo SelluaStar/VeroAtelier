@@ -93,7 +93,7 @@ function Shop() {
 
     if (activeGender !== 'all' && !searchQuery) {
       filtered = filtered.filter(p =>
-        p.category?.toLowerCase() === activeGender.toLowerCase()
+        p.gender?.toLowerCase() === activeGender.toLowerCase()
       );
     }
 
@@ -405,6 +405,11 @@ function Shop() {
                 <div className="product-details-new">
                   {product.brand && <div className="product-brand-new">{product.brand}</div>}
                   <h3 className="product-name-new">{product.name}</h3>
+                  {product.gender && (
+                    <div className="product-gender-badge">
+                      {product.gender.charAt(0).toUpperCase() + product.gender.slice(1)}
+                    </div>
+                  )}
                   <div className="product-pricing">
                     <span className="product-price-new">${product.price}</span>
                   </div>
