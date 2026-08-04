@@ -67,68 +67,173 @@
   color: #000;
 }
 
-/* Nested category dropdown */
-.category-menu {
-  min-width: 200px;
+/* Category accordion dropdown */
+.cat-accordion-menu {
+  min-width: 220px;
 }
 
-.filter-menu-item-group {
-  position: relative;
+.cat-group {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
-.filter-menu-item {
+.cat-group:last-child {
+  border-bottom: none;
+}
+
+/* Category row — the main clickable item */
+.cat-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
   width: 100%;
-  padding: 0.875rem 1.25rem;
-  font-size: 0.875rem;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #444;
   background: none;
   border: none;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
   text-align: left;
   cursor: pointer;
   transition: background 0.15s;
 }
 
-.filter-menu-item:last-child {
-  border-bottom: none;
-}
-
-.filter-menu-item:hover {
+.cat-row:hover {
   background: rgba(0,0,0,0.03);
   color: #000;
 }
 
-.filter-menu-item.selected {
+.cat-row.cat-selected {
   color: #000;
   font-weight: 700;
 }
 
-.filter-menu-item-right {
+/* When a category has a chevron expand button, split label + button */
+.cat-row-label {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
 }
 
-.filter-check {
-  font-size: 0.875rem;
-  font-weight: 800;
+/* Outer row wrapping label + expand chevron */
+.cat-row:has(.cat-row-label) {
+  padding: 0;
+}
+
+div.cat-row {
+  display: flex;
+  align-items: stretch;
+}
+
+div.cat-row .cat-row-label {
+  flex: 1;
+  padding: 0.9rem 0 0.9rem 1.25rem;
+}
+
+.cat-expand-btn {
+  padding: 0.9rem 1rem;
+  background: none;
+  border: none;
+  border-left: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #999;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cat-expand-btn:hover {
+  background: rgba(0,0,0,0.04);
   color: #000;
 }
 
-/* Subcategory flyout panel — appears to the right */
-.subcategory-flyout {
+/* Chevron rotation */
+.chevron-icon {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chevron-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Subcategory rows — indented below parent */
+.cat-subs {
+  border-top: 1px solid rgba(0,0,0,0.04);
+  padding-left: 0;
+}
+
+.cat-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem 1.25rem 0.8rem 2.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+}
+
+.cat-sub-row:last-child {
+  border-bottom: none;
+}
+
+/* The vertical line connecting subcategories */
+.cat-sub-row::before {
+  content: '';
   position: absolute;
+  left: 1.25rem;
   top: 0;
-  left: 100%;
-  background: white;
-  border: 1px solid rgba(0,0,0,0.1);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  z-index: 300;
-  min-width: 160px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0,0,0,0.12);
+}
+
+.cat-sub-row:last-child::before {
+  bottom: 50%;
+}
+
+/* Horizontal tick to each sub item */
+.cat-sub-row::after {
+  content: '';
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  width: 0.6rem;
+  height: 1px;
+  background: rgba(0,0,0,0.12);
+}
+
+.cat-sub-row:hover {
+  background: rgba(0,0,0,0.03);
+  color: #000;
+}
+
+.cat-sub-row.cat-selected {
+  color: #000;
+  font-weight: 700;
+}
+
+.cat-check {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #000;
+  flex-shrink: 0;
 }
 
 .active-filter {
@@ -136,6 +241,11 @@
   color: white !important;
   border-color: #000 !important;
 }
+
+/* Remove old flyout styles if present */
+.subcategory-flyout,
+.filter-menu-item-group,
+.filter-menu-item-right { display: none !important; }
 
 /* Filters Bar */
 .filters-bar {

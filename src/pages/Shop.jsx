@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import LoadingCard from '../components/LoadingCard';
 import './Shop.css';
 
@@ -16,13 +16,10 @@ function Shop() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // All / Men / Women / Unisex tab
   const [activeGender, setActiveGender] = useState(category || 'all');
-
-  // Category dropdown state (from filter bar)
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubcategory, setActiveSubcategory] = useState(subcategoryParam || null);
-  const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   const [filters, setFilters] = useState({
     brands: [],
@@ -35,7 +32,7 @@ function Shop() {
 
   const allBrands = [...new Set(products.map(p => p.brand).filter(Boolean))];
 
-  // Build category slug → Set of subcategories from actual products
+  // Build category slug → subcategories found in actual products
   const subcategoryMap = {};
   products.forEach(p => {
     if (p.category && p.subcategory) {
@@ -45,7 +42,6 @@ function Shop() {
     }
   });
 
-  // Fetch data
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
@@ -69,12 +65,12 @@ function Shop() {
     fetchData();
   }, []);
 
-  // Close dropdowns on outside click
+  // Close all dropdowns on outside click
   useEffect(() => {
     function handleClick(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowFilterDropdown(null);
-        setHoveredCategory(null);
+        setExpandedCategory(null);
       }
     }
     document.addEventListener('mousedown', handleClick);
@@ -95,38 +91,32 @@ function Shop() {
       );
     }
 
-    // Gender/department tab filter
     if (activeGender !== 'all' && !searchQuery) {
       filtered = filtered.filter(p =>
         p.category?.toLowerCase() === activeGender.toLowerCase()
       );
     }
 
-    // Category dropdown filter (overrides gender if set)
     if (activeCategory && !searchQuery) {
       filtered = filtered.filter(p =>
         p.category?.toLowerCase() === activeCategory.toLowerCase()
       );
     }
 
-    // Subcategory filter
     if (activeSubcategory && !searchQuery) {
       filtered = filtered.filter(p =>
         p.subcategory?.toLowerCase().trim() === activeSubcategory.toLowerCase().trim()
       );
     }
 
-    // Brands
     if (filters.brands.length > 0) {
       filtered = filtered.filter(p => filters.brands.includes(p.brand));
     }
 
-    // Price range
     filtered = filtered.filter(p =>
       p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
     );
 
-    // Sort
     if (filters.sortBy === 'price-low') filtered.sort((a, b) => a.price - b.price);
     else if (filters.sortBy === 'price-high') filtered.sort((a, b) => b.price - a.price);
 
@@ -147,9 +137,10 @@ function Shop() {
     setActiveCategory(null);
     setActiveSubcategory(null);
     setActiveGender('all');
+    setExpandedCategory(null);
   };
 
-  // Label shown on the Category dropdown button
+  // Label for the Category button
   const categoryLabel = activeSubcategory
     ? activeSubcategory
     : activeCategory
@@ -172,7 +163,6 @@ function Shop() {
               : 'All Products'}
           </h1>
 
-          {/* All / Men / Women / Unisex tabs */}
           {!searchQuery && isMainShopPage && (
             <div className="gender-toggle">
               {['all', 'men', 'women', 'unisex'].map(g => (
@@ -198,79 +188,86 @@ function Shop() {
         <div className="filters-bar-content">
           <div className="filters-left">
 
-            {/* Custom nested Category dropdown */}
+            {/* Category dropdown — inline accordion */}
             <div className="filter-dropdown-wrapper">
               <button
                 className={`filter-dropdown-btn ${activeCategory || activeSubcategory ? 'active-filter' : ''}`}
                 onClick={() => {
-                  setShowFilterDropdown(showFilterDropdown === 'category' ? null : 'category');
-                  setHoveredCategory(null);
+                  setShowFilterDropdown(prev => prev === 'category' ? null : 'category');
+                  setExpandedCategory(null);
                 }}
               >
                 {categoryLabel}
-                <ChevronDown size={14} />
+                <ChevronDown size={14} className={`chevron-icon ${showFilterDropdown === 'category' ? 'open' : ''}`} />
               </button>
 
               {showFilterDropdown === 'category' && (
-                <div className="filter-dropdown-menu category-menu">
-                  {/* "All categories" clear option */}
+                <div className="filter-dropdown-menu cat-accordion-menu">
+                  {/* All */}
                   <button
-                    className={`filter-menu-item ${!activeCategory && !activeSubcategory ? 'selected' : ''}`}
+                    className={`cat-row ${!activeCategory && !activeSubcategory ? 'cat-selected' : ''}`}
                     onClick={() => {
                       setActiveCategory(null);
                       setActiveSubcategory(null);
+                      setExpandedCategory(null);
                       setShowFilterDropdown(null);
                     }}
                   >
                     All Categories
-                    {!activeCategory && !activeSubcategory && <span className="filter-check">✓</span>}
+                    {!activeCategory && !activeSubcategory && <span className="cat-check">✓</span>}
                   </button>
 
                   {categories.map(cat => {
                     const subs = subcategoryMap[cat.slug.toLowerCase()]
                       ? [...subcategoryMap[cat.slug.toLowerCase()]]
                       : [];
-                    const isHovered = hoveredCategory === cat.id;
-                    const isSelected = activeCategory === cat.slug;
+                    const isOpen = expandedCategory === cat.id;
+                    const isActive = activeCategory === cat.slug;
 
                     return (
-                      <div
-                        key={cat.id}
-                        className="filter-menu-item-group"
-                        onMouseEnter={() => subs.length > 0 && setHoveredCategory(cat.id)}
-                        onMouseLeave={() => setHoveredCategory(null)}
-                      >
-                        <button
-                          className={`filter-menu-item ${isSelected ? 'selected' : ''}`}
-                          onClick={() => {
-                            setActiveCategory(cat.slug);
-                            setActiveSubcategory(null);
-                            if (subs.length === 0) setShowFilterDropdown(null);
-                          }}
-                        >
-                          {cat.name}
-                          <span className="filter-menu-item-right">
-                            {isSelected && !activeSubcategory && <span className="filter-check">✓</span>}
-                            {subs.length > 0 && <ChevronRight size={13} />}
-                          </span>
-                        </button>
+                      <div key={cat.id} className="cat-group">
+                        {/* Category row */}
+                        <div className={`cat-row ${isActive && !activeSubcategory ? 'cat-selected' : ''}`}>
+                          <button
+                            className="cat-row-label"
+                            onClick={() => {
+                              setActiveCategory(cat.slug);
+                              setActiveSubcategory(null);
+                              if (subs.length === 0) setShowFilterDropdown(null);
+                            }}
+                          >
+                            {isActive && !activeSubcategory && <span className="cat-check">✓</span>}
+                            {cat.name}
+                          </button>
+                          {subs.length > 0 && (
+                            <button
+                              className="cat-expand-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedCategory(prev => prev === cat.id ? null : cat.id);
+                              }}
+                            >
+                              <ChevronDown size={13} className={`chevron-icon ${isOpen ? 'open' : ''}`} />
+                            </button>
+                          )}
+                        </div>
 
-                        {/* Subcategory flyout */}
-                        {isHovered && subs.length > 0 && (
-                          <div className="subcategory-flyout">
+                        {/* Inline subcategory list */}
+                        {isOpen && subs.length > 0 && (
+                          <div className="cat-subs">
                             {subs.map(sub => (
                               <button
                                 key={sub}
-                                className={`filter-menu-item ${activeSubcategory === sub ? 'selected' : ''}`}
+                                className={`cat-sub-row ${activeSubcategory === sub ? 'cat-selected' : ''}`}
                                 onClick={() => {
                                   setActiveCategory(cat.slug);
                                   setActiveSubcategory(sub);
                                   setShowFilterDropdown(null);
-                                  setHoveredCategory(null);
+                                  setExpandedCategory(null);
                                 }}
                               >
+                                {activeSubcategory === sub && <span className="cat-check">✓</span>}
                                 {sub}
-                                {activeSubcategory === sub && <span className="filter-check">✓</span>}
                               </button>
                             ))}
                           </div>
@@ -282,26 +279,26 @@ function Shop() {
               )}
             </div>
 
-            {/* Brand Dropdown */}
+            {/* Brand */}
             {allBrands.length > 0 && (
               <div className="filter-dropdown-wrapper">
                 <button
                   className={`filter-dropdown-btn ${filters.brands.length > 0 ? 'active-filter' : ''}`}
-                  onClick={() => setShowFilterDropdown(showFilterDropdown === 'brand' ? null : 'brand')}
+                  onClick={() => setShowFilterDropdown(prev => prev === 'brand' ? null : 'brand')}
                 >
                   {filters.brands.length > 0 ? `Brand (${filters.brands.length})` : 'Brand'}
-                  <ChevronDown size={14} />
+                  <ChevronDown size={14} className={`chevron-icon ${showFilterDropdown === 'brand' ? 'open' : ''}`} />
                 </button>
                 {showFilterDropdown === 'brand' && (
                   <div className="filter-dropdown-menu">
                     {allBrands.map(brand => (
                       <button
                         key={brand}
-                        className={`filter-menu-item ${filters.brands.includes(brand) ? 'selected' : ''}`}
+                        className={`cat-row ${filters.brands.includes(brand) ? 'cat-selected' : ''}`}
                         onClick={() => toggleBrand(brand)}
                       >
+                        {filters.brands.includes(brand) && <span className="cat-check">✓</span>}
                         {brand}
-                        {filters.brands.includes(brand) && <span className="filter-check">✓</span>}
                       </button>
                     ))}
                   </div>
@@ -309,16 +306,16 @@ function Shop() {
               </div>
             )}
 
-            {/* Price Range */}
+            {/* Price */}
             <div className="filter-dropdown-wrapper">
               <button
                 className="filter-dropdown-btn"
-                onClick={() => setShowFilterDropdown(showFilterDropdown === 'price' ? null : 'price')}
+                onClick={() => setShowFilterDropdown(prev => prev === 'price' ? null : 'price')}
               >
                 {filters.priceRange[0] > 0 || filters.priceRange[1] < 5000
                   ? `$${filters.priceRange[0]} – $${filters.priceRange[1]}`
                   : 'Price'}
-                <ChevronDown size={14} />
+                <ChevronDown size={14} className={`chevron-icon ${showFilterDropdown === 'price' ? 'open' : ''}`} />
               </button>
               {showFilterDropdown === 'price' && (
                 <div className="filter-dropdown-menu price-menu">
@@ -358,13 +355,10 @@ function Shop() {
             </div>
 
             {hasActiveFilters && (
-              <button className="clear-filters-btn" onClick={clearAllFilters}>
-                Clear All
-              </button>
+              <button className="clear-filters-btn" onClick={clearAllFilters}>Clear All</button>
             )}
           </div>
 
-          {/* Sort */}
           <div className="filters-right">
             <select
               className="sort-select-new"
@@ -386,7 +380,10 @@ function Shop() {
           {activeSubcategory && !isLoading && (
             <span style={{ marginLeft: '0.75rem', color: '#666' }}>
               in <strong>{activeSubcategory}</strong>
-              <button onClick={() => setActiveSubcategory(null)} style={{ marginLeft: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}>×</button>
+              <button
+                onClick={() => setActiveSubcategory(null)}
+                style={{ marginLeft: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '1rem' }}
+              >×</button>
             </span>
           )}
         </p>
