@@ -245,6 +245,36 @@
   opacity: 0.6;
 }
 
+.featured-scroll {
+  display: flex;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f5f5f5;
+}
+
+.featured-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.featured-scroll::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.featured-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.featured-scroll::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
 .featured-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -265,6 +295,15 @@
   background: white;
   overflow: hidden;
   transition: box-shadow 0.3s ease;
+  width: 350px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .featured-card {
+    width: 280px;
+  }
 }
 
 .featured-card:hover {
@@ -273,7 +312,8 @@
 
 .featured-img {
   position: relative;
-  aspect-ratio: 16/9;
+  width: 100%;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #F5F5F5;
 }

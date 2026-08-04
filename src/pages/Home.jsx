@@ -1,11 +1,64 @@
 import { Link } from 'react-router-dom';
-import { products, categories, subcategories } from '../data/products';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { categories, subcategories } from '../data/products';
 import './Home.css';
 
 function Home() {
-  const newArrivals = products.slice(0, 8);
-  const featured = products.slice(0, 2);
-  const trendingBrands = ['Saint Laurent', 'Celine', 'Acne Studios', 'The Row', 'Bottega Veneta', 'Prada'];
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [featured, setFeatured] = useState([]);
+  const [trendingBrands, setTrendingBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchHomeData();
+  }, []);
+
+  const fetchHomeData = async () => {
+    try {
+      // Fetch featured products
+      const { data: featuredData } = await supabase
+        .from('products')
+        .select('*')
+        .eq('featured', true)
+        .limit(20);
+
+      // Fetch new arrivals - last 8 items added
+      const { data: arrivalsData } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(8);
+
+      // Fetch all brands and get top viewed ones
+      const { data: brandsData } = await supabase
+        .from('products')
+        .select('brand, view_count')
+        .not('brand', 'is', null);
+
+      // Aggregate brands by view count
+      const brandViewCounts = {};
+      brandsData?.forEach(product => {
+        if (product.brand) {
+          brandViewCounts[product.brand] = (brandViewCounts[product.brand] || 0) + (product.view_count || 0);
+        }
+      });
+
+      // Sort brands by total views and get top 6
+      const sortedBrands = Object.entries(brandViewCounts)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 6)
+        .map(([brand]) => brand);
+
+      setFeatured(featuredData || []);
+      setNewArrivals(arrivalsData || []);
+      setTrendingBrands(sortedBrands);
+    } catch (err) {
+      console.error('Error fetching home data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="home">
@@ -110,11 +163,11 @@ function Home() {
           <h2 className="section-heading">Featured This Week</h2>
           <Link to="/shop" className="view-all-link">View All</Link>
         </div>
-        <div className="featured-grid">
+        <div className="featured-scroll">
           {featured.map((product) => (
             <Link key={product.id} to={`/product/${product.id}`} className="featured-card">
               <div className="featured-img">
-                <img src={product.images[0]} alt={product.name} />
+                <img src={product.images?.[0]} alt={product.name} />
                 <span className="condition-label">{product.condition}</span>
               </div>
               <div className="featured-info">
@@ -122,8 +175,12 @@ function Home() {
                 <p>{product.name}</p>
                 <div className="price-info">
                   <span className="current">${product.price}</span>
-                  <span className="original">${product.originalPrice}</span>
-                  <span className="discount">-{Math.round((1 - product.price / product.originalPrice) * 100)}%</span>
+                  {product.original_price && (
+                    <>
+                      <span className="original">${product.original_price}</span>
+                      <span className="discount">-{Math.round((1 - product.price / product.original_price) * 100)}%</span>
+                    </>
+                  )}
                 </div>
               </div>
             </Link>
@@ -141,7 +198,7 @@ function Home() {
           {newArrivals.map((product) => (
             <Link key={product.id} to={`/product/${product.id}`} className="arrival-card">
               <div className="arrival-img">
-                <img src={product.images[0]} alt={product.name} />
+                <img src={product.images?.[0]} alt={product.name} />
               </div>
               <div className="arrival-info">
                 <h4>{product.brand}</h4>

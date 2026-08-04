@@ -24,7 +24,7 @@ function Shop() {
   const [filters, setFilters] = useState({
     brands: [],
     priceRange: [0, 5000],
-    sortBy: 'newest',
+    sortBy: 'popular', // Changed default to 'popular'
   });
   const [showFilterDropdown, setShowFilterDropdown] = useState(null);
   const dropdownRef = useRef(null);
@@ -117,8 +117,12 @@ function Shop() {
       p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
     );
 
+    // Sorting
     if (filters.sortBy === 'price-low') filtered.sort((a, b) => a.price - b.price);
     else if (filters.sortBy === 'price-high') filtered.sort((a, b) => b.price - a.price);
+    else if (filters.sortBy === 'popular') filtered.sort((a, b) => (b.popularity_order || 0) - (a.popularity_order || 0));
+    else if (filters.sortBy === 'most-purchased') filtered.sort((a, b) => (b.purchase_count || 0) - (a.purchase_count || 0));
+    // 'newest' is default order from database
 
     setFilteredProducts(filtered);
   }, [products, activeGender, activeCategory, activeSubcategory, filters, searchQuery]);
@@ -133,7 +137,7 @@ function Shop() {
   };
 
   const clearAllFilters = () => {
-    setFilters({ brands: [], priceRange: [0, 5000], sortBy: 'newest' });
+    setFilters({ brands: [], priceRange: [0, 5000], sortBy: 'popular' });
     setActiveCategory(null);
     setActiveSubcategory(null);
     setActiveGender('all');
@@ -365,6 +369,8 @@ function Shop() {
               value={filters.sortBy}
               onChange={e => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
             >
+              <option value="popular">Popular</option>
+              <option value="most-purchased">Most Purchased</option>
               <option value="newest">Newest</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>

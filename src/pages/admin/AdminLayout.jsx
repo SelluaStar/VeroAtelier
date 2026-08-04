@@ -14,7 +14,8 @@ import {
   Search,
   Bell,
   Settings,
-  Zap
+  Zap,
+  Home
 } from 'lucide-react';
 import './AdminLayout.css';
 
@@ -41,6 +42,7 @@ function AdminLayout() {
   const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/admin/products', icon: Package, label: 'Products' },
+    { path: '/admin/product-order', icon: Zap, label: 'Product Order' },
     {
       path: '/admin/orders',
       icon: ShoppingCart,
@@ -190,6 +192,10 @@ function AdminLayout() {
                 </button>
               );
             })}
+            <Link to="/" className="nav-item" onClick={() => setMobileMenuOpen(false)}>
+              <Home size={20} />
+              <span>Back to Store</span>
+            </Link>
             <button onClick={handleSignOut} className="nav-item logout">
               <LogOut size={20} />
               <span>Sign Out</span>

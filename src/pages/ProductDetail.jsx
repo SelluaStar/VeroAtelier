@@ -22,7 +22,18 @@ function ProductDetail() {
 
   useEffect(() => {
     fetchProduct();
+    trackView();
   }, [id]);
+
+  const trackView = async () => {
+    try {
+      // Increment view count
+      const { error } = await supabase.rpc('increment_view_count', { product_id: id });
+      if (error) console.error('Error tracking view:', error);
+    } catch (err) {
+      console.error('Error tracking view:', err);
+    }
+  };
 
   const fetchProduct = async () => {
     setLoading(true);

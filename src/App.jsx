@@ -15,6 +15,7 @@ import Onboarding from './pages/Onboarding';
 import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import Products from './pages/admin/Products';
+import ProductOrder from './pages/admin/ProductOrder';
 import Orders from './pages/admin/Orders';
 import Users from './pages/admin/Users';
 import Coupons from './pages/admin/Coupons';
@@ -50,6 +51,7 @@ function AppContent() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
+              <Route path="product-order" element={<ProductOrder />} />
               <Route path="orders" element={<Orders />} />
               <Route path="users" element={<Users />} />
               <Route path="coupons" element={<Coupons />} />
