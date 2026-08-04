@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { Plus, Edit, Trash2, Star, Search, Upload, X, GripVertical, Image as ImageIcon, Info } from 'lucide-react';
 import LoadingCard from '../../components/LoadingCard';
@@ -102,9 +103,10 @@ function Products() {
   const [seedingDemo, setSeedingDemo] = useState(false);
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', original_price: '',
-    category: '', subcategory: '', brand: '', size: '', condition: '',
+    category: '', subcategory: '', gender: '', brand: '', size: '', condition: '',
     images: [], stock: '', featured: false, is_on_sale: false, discount_percentage: ''
   });
+  const location = useLocation();
   const [draggedImageIndex, setDraggedImageIndex] = useState(null);
 
   useEffect(() => { loadProducts(); loadCategories(); }, []);
@@ -214,6 +216,7 @@ function Products() {
         price: parseFloat(formData.price),
         original_price: formData.original_price ? parseFloat(formData.original_price) : null,
         category: formData.category, subcategory: formData.subcategory,
+        gender: formData.gender || null,
         brand: formData.brand, size: formData.size, condition: formData.condition,
         images: formData.images, image_url: formData.images[0] || null,
         stock: parseInt(formData.stock) || 0,
@@ -245,6 +248,7 @@ function Products() {
       name: product.name || '', description: product.description || '',
       price: product.price || '', original_price: product.original_price || '',
       category: product.category || '', subcategory: product.subcategory || '',
+      gender: product.gender || '',
       brand: product.brand || '', size: product.size || '', condition: product.condition || '',
       images: product.images || [],
       stock: product.stock || '', featured: product.featured || false,
@@ -252,6 +256,15 @@ function Products() {
     });
     setShowModal(true);
   };
+
+  // Auto-open edit modal when navigated from product detail page
+  useEffect(() => {
+    if (location.state?.editProductId && products.length > 0) {
+      const target = products.find(p => p.id === location.state.editProductId);
+      if (target) handleEdit(target);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [location.state, products]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
@@ -277,7 +290,7 @@ function Products() {
   const resetForm = () => {
     setFormData({
       name: '', description: '', price: '', original_price: '',
-      category: '', subcategory: '', brand: '', size: '', condition: '',
+      category: '', subcategory: '', gender: '', brand: '', size: '', condition: '',
       images: [], stock: '', featured: false, is_on_sale: false, discount_percentage: ''
     });
   };
@@ -488,6 +501,15 @@ function Products() {
                   <div className="form-group">
                     <label>Available Sizes <Tooltip text="Comma-separated sizes, e.g. 'S, M, L' or '38, 40, 42'. Leave blank if one-size."><span className="field-info"><Info size={13} /></span></Tooltip></label>
                     <input type="text" placeholder="e.g. S, M, L or 38, 40, 42" value={formData.size} onChange={(e) => setFormData({ ...formData, size: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label>Gender</label>
+                    <select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
+                      <option value="">Select gender</option>
+                      <option value="men">Men</option>
+                      <option value="women">Women</option>
+                      <option value="unisex">Unisex</option>
+                    </select>
                   </div>
                   <div className="form-group">
                     <label>Condition</label>

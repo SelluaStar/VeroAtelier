@@ -122,22 +122,24 @@ function AdminLayout() {
               if (item.expandable) {
                 return (
                   <div key={item.label}>
-                    <button
-                      className={`nav-item ${active ? 'active' : ''} ${item.expanded ? 'expanded' : ''}`}
-                      onClick={() => {
-                        item.setExpanded(!item.expanded);
-                        if (item.path) {
-                          navigate(item.path);
-                          setMobileMenuOpen(false);
-                        }
-                      }}
-                    >
-                      <Icon size={20} />
-                      <span style={{ flex: 1 }}>{item.label}</span>
+                    <div className={`nav-item-wrapper ${active ? 'active' : ''} ${item.expanded ? 'expanded' : ''}`}>
+                      <Link
+                        to={item.path}
+                        className="nav-item-main"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Icon size={20} />
+                        <span style={{ flex: 1 }}>{item.label}</span>
+                      </Link>
                       {item.subitems && (
-                        <ChevronDown size={16} className="nav-expand-icon" />
+                        <button
+                          className="nav-expand-btn"
+                          onClick={() => item.setExpanded(!item.expanded)}
+                        >
+                          <ChevronDown size={16} className="nav-expand-icon" />
+                        </button>
                       )}
-                    </button>
+                    </div>
                     {item.expanded && item.subitems && (
                       <div className="nav-subitems">
                         {item.subitems.map((sub) => (
@@ -194,19 +196,6 @@ function AdminLayout() {
             </button>
           </div>
         </nav>
-
-        <div className="sidebar-footer">
-          <div className="upgrade-card">
-            <div className="upgrade-icon">
-              <Zap size={24} />
-            </div>
-            <div className="upgrade-title">Upgrade to Premium</div>
-            <div className="upgrade-description">
-              Your Premium Account will expire in 18 days.
-            </div>
-            <button className="upgrade-btn">Upgrade Now</button>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content */}

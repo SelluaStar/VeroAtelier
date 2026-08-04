@@ -11,6 +11,46 @@
   padding: 0 2rem;
 }
 
+/* Admin edit bar */
+.admin-edit-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1.5rem;
+  background: #000;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.admin-edit-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.admin-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  font-family: inherit;
+}
+
+.admin-edit-btn:hover {
+  opacity: 0.85;
+}
+
 /* Not Found */
 .not-found-page {
   min-height: 80vh;

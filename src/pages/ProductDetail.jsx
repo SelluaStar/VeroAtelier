@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
-import { ChevronLeft, Check, Heart } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { ChevronLeft, Check, Heart, Pencil } from 'lucide-react';
 import './ProductDetail.css';
 
 function ProductDetail() {
@@ -16,6 +17,8 @@ function ProductDetail() {
   const [isFavorite, setIsFavorite] = useState(false);
   const { addToCart } = useCart();
   const { addToast } = useToast();
+  const { profile } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProduct();
@@ -108,6 +111,20 @@ function ProductDetail() {
           <span className="breadcrumb-separator">/</span>
           <span className="breadcrumb-current">{product.category}</span>
         </div>
+
+        {/* Admin edit bar */}
+        {profile?.is_admin && product && (
+          <div className="admin-edit-bar">
+            <span className="admin-edit-label">Admin</span>
+            <button
+              className="admin-edit-btn"
+              onClick={() => navigate('/admin/products', { state: { editProductId: product.id } })}
+            >
+              <Pencil size={14} />
+              Edit Product
+            </button>
+          </div>
+        )}
 
         <div className="product-detail-layout">
           {/* Image Gallery */}
