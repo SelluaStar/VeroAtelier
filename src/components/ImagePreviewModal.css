@@ -1,0 +1,171 @@
+.image-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.2s ease-out;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-preview-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.preview-header {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
+}
+
+.preview-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: white;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 2px #000;
+  animation: fadeInDown 0.3s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preview-product-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.preview-brand-name {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.preview-actions {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  animation: fadeInDown 0.3s ease-out;
+}
+
+.preview-action-btn,
+.preview-close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.preview-action-btn:hover,
+.preview-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.preview-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 90vw;
+  max-height: 90vh;
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.preview-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .preview-header {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .preview-actions {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .preview-product-info {
+    padding: 0.75rem 1rem;
+  }
+
+  .preview-product-name {
+    font-size: 0.875rem;
+  }
+
+  .preview-brand-name {
+    font-size: 0.75rem;
+  }
+
+  .preview-action-btn,
+  .preview-close-btn {
+    padding: 0.5rem;
+  }
+
+  .preview-action-btn svg,
+  .preview-close-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+
+

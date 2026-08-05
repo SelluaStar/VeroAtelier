@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, Check, Heart, Pencil } from 'lucide-react';
+import ImagePreviewModal from '../components/ImagePreviewModal';
 import './ProductDetail.css';
 
 function ProductDetail() {
@@ -15,6 +16,8 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
   const { addToCart } = useCart();
   const { addToast } = useToast();
   const { profile } = useAuth();
@@ -140,7 +143,7 @@ function ProductDetail() {
         <div className="product-detail-layout">
           {/* Image Gallery */}
           <div className="product-gallery">
-            <div className="gallery-main">
+            <div className="gallery-main" onClick={() => setShowImagePreview(true)} style={{ cursor: 'pointer' }}>
               {product.images[selectedImage] ? (
                 <img src={product.images[selectedImage]} alt={product.name} className="gallery-main-img" />
               ) : (
@@ -218,7 +221,12 @@ function ProductDetail() {
               <div className="size-selection">
                 <div className="size-selection-header">
                   <h3>Select Size</h3>
-                  <button className="size-guide-btn">Size Guide</button>
+                  <button
+                    className="size-guide-btn"
+                    onClick={() => setShowSizeGuide(true)}
+                  >
+                    Size Guide
+                  </button>
                 </div>
                 <div className="size-options-grid">
                   {product.sizes.map((size) => (
@@ -286,6 +294,26 @@ function ProductDetail() {
           </div>
         )}
       </div>
+
+      {/* Size Guide Modal */}
+      {showSizeGuide && (
+        <ImagePreviewModal
+          imageUrl={product.size_guide_image || '/default-size-guide.png'}
+          productName={product.name}
+          brandName={product.brand || 'Vero Atelier'}
+          onClose={() => setShowSizeGuide(false)}
+        />
+      )}
+
+      {/* Product Image Preview Modal */}
+      {showImagePreview && product.images[selectedImage] && (
+        <ImagePreviewModal
+          imageUrl={product.images[selectedImage]}
+          productName={product.name}
+          brandName={product.brand || 'Vero Atelier'}
+          onClose={() => setShowImagePreview(false)}
+        />
+      )}
     </div>
   );
 }

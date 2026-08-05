@@ -150,7 +150,7 @@ function Account() {
         <div className="actions-section">
           <h3 className="section-title">Account Management</h3>
           <div className="actions-grid">
-            <div className="action-card">
+            <div className="action-card" onClick={() => navigate('/account/orders')}>
               <div className="action-icon">
                 <ShoppingBag size={24} strokeWidth={1.5} />
               </div>

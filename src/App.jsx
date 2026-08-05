@@ -7,7 +7,11 @@ import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import CheckoutSuccess from './pages/CheckoutSuccess';
 import Account from './pages/Account';
+import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import VerifyEmail from './pages/VerifyEmail';
@@ -16,7 +20,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import Products from './pages/admin/Products';
 import ProductOrder from './pages/admin/ProductOrder';
-import Orders from './pages/admin/Orders';
+import AdminOrders from './pages/admin/Orders';
 import Users from './pages/admin/Users';
 import Coupons from './pages/admin/Coupons';
 import { CartProvider } from './context/CartContext';
@@ -28,12 +32,13 @@ function AppContent() {
   const location = useLocation();
   const isAuthPage = ['/signin', '/signup', '/verify-email', '/onboarding'].includes(location.pathname);
   const isAdminPage = location.pathname.startsWith('/admin');
+  const isCheckoutPage = location.pathname.startsWith('/checkout');
 
   return (
     <div className="app">
-      {!isAuthPage && !isAdminPage && <Header />}
-      {!isAuthPage && !isAdminPage && <CartDrawer />}
-      <main className={`main-content ${!isAuthPage && !isAdminPage ? 'with-header' : ''}`}>
+      {!isAuthPage && !isAdminPage && !isCheckoutPage && <Header />}
+      {!isAuthPage && !isAdminPage && !isCheckoutPage && <CartDrawer />}
+      <main className={`main-content ${!isAuthPage && !isAdminPage && !isCheckoutPage ? 'with-header' : ''}`}>
         <PageTransition key={location.pathname}>
           <Routes location={location}>
             <Route path="/" element={<Home />} />
@@ -41,7 +46,11 @@ function AppContent() {
             <Route path="/shop/:category/:subcategory" element={<Shop />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout/success" element={<CheckoutSuccess />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/account/orders" element={<Orders />} />
+            <Route path="/account/orders/:orderId" element={<OrderDetail />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
@@ -52,7 +61,7 @@ function AppContent() {
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
               <Route path="product-order" element={<ProductOrder />} />
-              <Route path="orders" element={<Orders />} />
+              <Route path="orders" element={<AdminOrders />} />
               <Route path="users" element={<Users />} />
               <Route path="coupons" element={<Coupons />} />
             </Route>

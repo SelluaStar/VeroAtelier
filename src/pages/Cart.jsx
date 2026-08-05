@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Trash2, Plus, Minus, ShoppingBag, Lock, Package, RefreshCcw } from 'lucide-react';
 import './Cart.css';
 
 function Cart() {
   const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+  const navigate = useNavigate();
 
   if (cart.length === 0) {
     return (
@@ -151,7 +152,7 @@ function Cart() {
                 <span className="summary-total-value">${total.toFixed(2)}</span>
               </div>
 
-              <button className="checkout-btn-new">
+              <button className="checkout-btn-new" onClick={() => navigate('/checkout')}>
                 Proceed to Checkout
               </button>
 

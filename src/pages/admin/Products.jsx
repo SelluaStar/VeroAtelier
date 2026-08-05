@@ -104,7 +104,7 @@ function Products() {
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', original_price: '',
     category: '', subcategory: '', gender: '', brand: '', size: '', condition: '',
-    images: [], stock: '', featured: false, is_on_sale: false, discount_percentage: ''
+    images: [], stock: '', featured: false, is_on_sale: false, discount_percentage: '', size_guide_image: ''
   });
   const location = useLocation();
   const [draggedImageIndex, setDraggedImageIndex] = useState(null);
@@ -221,7 +221,8 @@ function Products() {
         images: formData.images, image_url: formData.images[0] || null,
         stock: parseInt(formData.stock) || 0,
         featured: formData.featured, is_on_sale: formData.is_on_sale,
-        discount_percentage: formData.discount_percentage ? parseInt(formData.discount_percentage) : null
+        discount_percentage: formData.discount_percentage ? parseInt(formData.discount_percentage) : null,
+        size_guide_image: formData.size_guide_image || null
       };
       if (editingProduct) {
         const { error } = await supabase.from('products').update(productData).eq('id', editingProduct.id);
@@ -252,7 +253,8 @@ function Products() {
       brand: product.brand || '', size: product.size || '', condition: product.condition || '',
       images: product.images || [],
       stock: product.stock || '', featured: product.featured || false,
-      is_on_sale: product.is_on_sale || false, discount_percentage: product.discount_percentage || ''
+      is_on_sale: product.is_on_sale || false, discount_percentage: product.discount_percentage || '',
+      size_guide_image: product.size_guide_image || ''
     });
     setShowModal(true);
   };
@@ -291,7 +293,7 @@ function Products() {
     setFormData({
       name: '', description: '', price: '', original_price: '',
       category: '', subcategory: '', gender: '', brand: '', size: '', condition: '',
-      images: [], stock: '', featured: false, is_on_sale: false, discount_percentage: ''
+      images: [], stock: '', featured: false, is_on_sale: false, discount_percentage: '', size_guide_image: ''
     });
   };
 
@@ -540,6 +542,26 @@ function Products() {
                     label="On Sale"
                     description="Displays a Sale badge on the product card and shows the original price with a strikethrough."
                   />
+                </div>
+              </div>
+
+              {/* Size Guide */}
+              <div className="form-section">
+                <div className="section-title-row">
+                  <h3 className="section-title">Size Guide Image (Optional)</h3>
+                  <Tooltip text="Upload a custom size guide image for this product. If left blank, the default size guide will be used.">
+                    <span className="section-info"><Info size={16} /></span>
+                  </Tooltip>
+                </div>
+                <div className="form-group">
+                  <label>Size Guide Image URL</label>
+                  <input
+                    type="text"
+                    placeholder="Leave blank to use default size guide"
+                    value={formData.size_guide_image}
+                    onChange={(e) => setFormData({ ...formData, size_guide_image: e.target.value })}
+                  />
+                  <p className="upload-hint">Enter an image URL or leave blank to use the default size guide</p>
                 </div>
               </div>
 

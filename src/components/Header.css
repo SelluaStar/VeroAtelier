@@ -8,7 +8,7 @@
   padding-top: calc(1.5rem + env(safe-area-inset-top));
   padding-left: calc(2rem + env(safe-area-inset-left));
   padding-right: calc(2rem + env(safe-area-inset-right));
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .header::before {
@@ -24,17 +24,16 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   z-index: -1;
   will-change: backdrop-filter;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0;
 }
 
 .header.scrolled {
   padding: 1rem 3.5rem;
-  margin: 1rem auto 0;
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-  max-width: 2200px;
-  width: calc(100% - 4rem);
-  animation: popOutFromTop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  top: 1rem;
+  left: 0;
+  right: 0;
+  margin: 0 2rem;
 }
 
 .header.scrolled::before {
@@ -51,16 +50,15 @@
 
 @keyframes popOutFromTop {
   0% {
-    transform: translateX(-50%) translateY(-100%) scaleY(0.3);
-    opacity: 0;
-  }
-  60% {
-    transform: translateX(-50%) translateY(0) scaleY(1.02);
-    opacity: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
   }
   100% {
-    transform: translateX(-50%) translateY(0) scaleY(1);
-    opacity: 1;
+    top: 1rem;
+    left: 2rem;
+    right: 2rem;
   }
 }
 

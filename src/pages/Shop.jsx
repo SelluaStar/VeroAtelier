@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { ChevronDown } from 'lucide-react';
 import LoadingCard from '../components/LoadingCard';
@@ -10,6 +10,7 @@ function Shop() {
   const [searchParams] = useSearchParams();
   const subcategoryParam = searchParams.get('subcategory');
   const searchQuery = searchParams.get('search');
+  const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -142,6 +143,8 @@ function Shop() {
     setActiveSubcategory(null);
     setActiveGender('all');
     setExpandedCategory(null);
+    // Navigate to clean /shop URL
+    navigate('/shop');
   };
 
   // Label for the Category button
